@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load form_filters %}
+
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%; margin-top:4rem">
+        <h2 class="text-center mb-4">LogIn Page</h2>
+
+       
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="{{ form.username.id_for_label }}" class="form-label">{{ form.username.label }}</label>
+                {{ form.username|add_class:"form-control" }}
+                {% for error in form.username.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.password.id_for_label }}" class="form-label">{{ form.password.label }}</label>
+                {{ form.password|add_class:"form-control" }}
+                {% for error in form.password.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Log In</button>
+        </form>
+
+        <p class="text-center mt-3">
+            Don't have an account? <a href="{% url 'users:signup' %}">Sign up</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

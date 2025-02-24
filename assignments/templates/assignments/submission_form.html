@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">Submit Assignment</h2>
+
+        {% comment %} {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+        {% endif %} {% endcomment %}
+
+        {% comment %} {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Please correct the errors below:</strong>
+                <ul>
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <li>{{ field.label }}: 
+                                {% for error in field.errors %}
+                                    <span>{{ error }}</span><br>
+                                {% endfor %}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %} {% endcomment %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold">{{ field.label }}</label>
+                    <div class="input-group">
+                        {% if field.field.widget.input_type == "text" %}
+                            <span class="input-group-text"><i class="bi bi-pencil"></i></span>
+                        {% elif field.field.widget.input_type == "email" %}
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        {% elif field.field.widget.input_type == "file" %}
+                            <span class="input-group-text"><i class="bi bi-file-earmark-arrow-up"></i></span>
+                        {% endif %}
+                        {{ field|add_class:"form-control" }}
+                    </div>
+                    {% if field.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ field.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-upload"></i> Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Additional Styling -->
+<style>
+    .card {
+        max-width: 600px;
+        margin: auto;
+        border-radius: 12px;
+        background: #fff;
+    }
+    h2 {
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    .form-control {
+        border-radius: 8px;
+    }
+    .btn-primary {
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+</style>
+
+<!-- Bootstrap Icons (if not already included) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+{% endblock %}

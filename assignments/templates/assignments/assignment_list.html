@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary fw-bold mb-4">📚 Assignments</h2>
+
+    <!-- Show "Add Assignment" button only for tutors -->
+    {% if request.user.is_authenticated and request.user.tutorprofile %}
+    <div class="text-center mb-4">
+        <a href="{% url 'assignments:create' %}" class="btn btn-success fw-bold shadow">
+            <i class="fas fa-plus-circle me-2"></i> Add Assignment
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        {% for assignment in assignments %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow-lg border-0 rounded-4 assignment-card">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold text-dark">
+                        <a href="{% url 'assignments:detail' assignment.id %}" class="text-decoration-none text-primary">
+                            <i class="bi bi-file-earmark-text"></i> {{ assignment.title }}
+                        </a>
+                    </h5>
+                    <p class="text-muted small">
+                        <i class="bi bi-calendar-event"></i> <strong>Due Date:</strong>
+                        <span class="fw-semibold text-danger">{{ assignment.due_date }}</span>
+                    </p>
+                    <p class="mb-1 text-secondary fw-semibold">
+                        <i class="bi bi-person"></i> Created by: 
+                        <span class="text-dark">{{ assignment.tutor.name }}</span>
+                    </p>
+                    <div class="d-grid">
+                        <a href="{% url 'assignments:detail' assignment.id %}" class="btn btn-outline-primary view-btn">
+                            <i class="bi bi-eye"></i> View Assignment
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="text-muted">No assignments available.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    /* Advanced UI Styling */
+    body {
+        background: linear-gradient(to right, #f7f7f7, #ffffff);
+    }
+    .assignment-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        border-radius: 12px;
+    }
+    .assignment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+    .view-btn {
+        transition: all 0.3s ease-in-out;
+        font-weight: bold;
+    }
+    .view-btn:hover {
+        background-color: #007bff;
+        color: white;
+    }
+    .btn-success {
+        background: linear-gradient(to right, #28a745, #218838);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease-in-out;
+    }
+    .btn-success:hover {
+        background: linear-gradient(to right, #218838, #1e7e34);
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}

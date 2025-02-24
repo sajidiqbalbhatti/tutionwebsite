@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+    
+    <!-- Hero Section -->
+   
+
+{% block hero %}
+    <header class="hero bg-light text-center text-dark py-5">
+        <div class="container">
+            <h1 class="display-4">Learn From The Best Tutors Online</h1>
+            <p class="lead">Interactive live classes & pre-recorded sessions with top tutors worldwide.</p>
+            <a href="#courses" class="btn btn-primary btn-lg">Explore Courses</a>
+        </div>
+    </header>
+{% endblock %}
+     <!-- swiper slider  -->
+{% block swiper %}
+<div class="container mt-4 ">
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="{% static 'imges/swiperv1.jpg' %}" alt="Slide 1"></div>
+            <div class="swiper-slide"><img src="{% static 'imges/swiperh3.jpg' %}" alt="Slide 1"></div>
+            <div class="swiper-slide"><img src="{% static 'imges/teacher.jpg' %}" alt="Slide 1"></div>
+            <div class="swiper-slide"><img src="{% static 'imges/online.jpg' %}" alt="Slide 1"></div>
+           
+            
+        </div>
+
+        <!-- Pagination -->
+        <div class="swiper-pagination"></div>
+
+        <!-- Navigation Buttons -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</div>
+
+{% endblock %}
+     <!-- Courses Section -->
+{% block Course %}
+<section id="courses" class="container py-5">
+    <h2 class="fw-bold text-center mb-4 text-uppercase">Explore Our Most Popular Courses</h2>
+    
+    <div class="row g-4">
+        {% for course in courses %}
+        <div class="col-lg-4 col-md-6 col-sm-12 d-flex">
+            <div class="card h-100 shadow-lg border-0 rounded-4 overflow-hidden w-100">
+                
+                {% if course.thumbnail %}
+                <a href="{% url 'courses:course_detail' course.id %}" class="d-block overflow-hidden position-relative">
+                    <img src="{{ course.thumbnail.url }}" class="card-img-top img-fluid course-thumbnail" 
+                        alt="{{ course.title }}">
+                    <div class="overlay"></div>
+                </a>
+                {% endif %}
+
+                <div class="card-body d-flex flex-column text-center">  
+                    
+                    {% if course.teacher %}
+                    <p class="text-muted mb-1">
+                        <strong class="fw-bold me-2">Instructor:</strong>
+                        <a href="{% url 'Tutor:tutor-profile-detail' course.teacher.pk %}" 
+                           class="text-decoration-none text-primary fw-semibold">
+                            {{ course.teacher.name }}
+                        </a>
+                    </p>
+                    {% else %}
+                    <p class="text-danger fw-semibold">No Tutor Assigned</p>
+                    {% endif %}
+
+                    <p class="text-muted mb-1">
+                        <strong class="fw-bold me-2">Course:</strong>
+                        <a href="{% url 'courses:course_detail' course.id %}" 
+                           class="text-decoration-none text-primary fw-semibold">
+                            {{ course.title }}
+                        </a>
+                    </p>
+
+                    <p class="card-text"><strong class="fw-bold me-2">Level:</strong> {{ course.get_course_level_display }}</p>
+
+                    <p class="text-muted small"><strong>Description:</strong> {{ course.description|truncatewords:10 }}</p>
+
+                    <div class="mb-3">
+                        {% comment %} <strong class="fw-bold">Mode:</strong>
+                        <div class="d-flex justify-content-center flex-wrap">
+                            {% for mode in course.mode.all %}
+                            <span class="badge bg-gradient bg-info text-dark px-3 py-2 mx-1 shadow-sm">
+                                {{ mode.get_mode_display }}
+                            </span>
+                            {% endfor %}
+                        </div> {% endcomment %}
+                    </div>
+
+                    <a href="{% url 'courses:course_detail' course.id %}" 
+                       class="btn btn-primary mt-auto fw-semibold btn-lg shadow-sm px-4 py-2 btn-hover">
+                        <i class="fas fa-arrow-right"></i> View Detail
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- See More Button -->
+    <div class="text-center mt-5">
+        <a href="{% url 'courses:course_list' %}" class="btn btn-outline-primary rounded-pill px-5 btn-lg shadow-sm btn-hover">
+            <i class="fas fa-chevron-right"></i> See More
+        </a>
+    </div>
+
+</section>
+{% endblock %}
+   
+
+    <!-- Tutors Section -->
+{% block Tutor %}
+<!-- Tutors Section -->
+<section id="tutors" class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-4 fw-bold">Meet Our Expert Tutors</h2>
+        <p class="text-center text-muted lead">
+            Learn from top-tier professionals with vast knowledge and experience.
+        </p>
+
+        <div class="row g-4">
+            {% for tutor in tutors|slice:":3" %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                    <!-- Tutor Image -->
+                    <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}">
+                        <img src="{{ tutor.profile_picture.url }}" 
+                             alt="{{ tutor.name }}'s Profile Picture" 
+                             class="card-img-top"
+                             style="height: 250px; object-fit: cover;">
+                    </a>
+
+                    <div class="card-body text-center">
+                        <!-- Tutor Name -->
+                        <h5 class="fw-bold mb-1">
+                            <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}" class="text-decoration-none text-dark">
+                                {{ tutor.name }}
+                            </a>
+                        </h5>
+                        <h5 class="fw-bold mb-1">
+                            <strong class="text-decoration-none text-dark">
+                                {{ tutor.education }}
+                            </strong>
+                        </h5>
+
+                        <!-- Subjects (Education) -->
+                        <div class="justify-content-start flex-wrap mb-2">
+                            {% for subject in tutor.subjects.all|slice:":4" %}
+                                <span class="badge bg-primary me-1 mb-1">{{ subject.name }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Tutor Bio -->
+                        <p class="small text-muted px-3">
+                            "{{ tutor.bio|truncatewords:10 }}"
+                        </p>
+                    </div>
+
+                    <div class="card-footer bg-white text-center py-3">
+                        <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}" class="btn btn-primary btn-sm rounded-pill px-4">
+                            View Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- See More Button -->
+        <div class="text-center mt-5">
+            <a href="{% url 'courses:course_list' %}" class="btn btn-outline-primary rounded-pill px-5 btn-lg shadow-sm btn-hover">
+                <i class="fas fa-chevron-right"></i> See More
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block about %}
+<section class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">About Us</h2>
+        <p class="text-muted fs-5">Providing high-quality online education with expert tutors worldwide.</p>
+    </div>
+    
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm p-4">
+                <div class="d-flex align-items-center">
+                    <div class="icon me-3">
+                        <i class="fas fa-bullseye fs-1 text-primary"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold">Our Mission</h4>
+                        <p class="text-muted">To make learning accessible to everyone by offering the best courses and tutors.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mt-4 mt-md-0">
+            <div class="card border-0 shadow-sm p-4">
+                <div class="d-flex align-items-center">
+                    <div class="icon me-3">
+                        <i class="fas fa-lightbulb fs-1 text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold">Our Vision</h4>
+                        <p class="text-muted">Empowering students through high-quality education and innovative teaching techniques.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add FontAwesome for icons -->
+<script src="https://kit.fontawesome.com/YOUR_KIT_CODE.js" crossorigin="anonymous"></script>
+
+{% endblock %}
+{% block feedback %}
+<section class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold display-5">Feedback</h2>
+        <p class="text-muted fs-5">We value your feedback to enhance our platform.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-12">
+            <div class="card border-0 shadow-lg p-4 rounded-4 bg-white">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-semibold">Your Name</label>
+                        <input type="text" class="form-control shadow-sm rounded-3" id="name" name="name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Your Email</label>
+                        <input type="email" class="form-control shadow-sm rounded-3" id="email" name="email" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="message" class="form-label fw-semibold">Your Feedback</label>
+                        <textarea class="form-control shadow-sm rounded-3" id="message" name="message" rows="4" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm py-2 rounded-3">Submit Feedback</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}
+{% block contact %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="text-center mb-4">Contact Us</h2>
+            <p class="text-center">Have questions? Reach out to us, and we’ll get back to you as soon as possible.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Contact Form -->
+        <div class="col-md-6">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="message" class="form-label">Your Message</label>
+                    <textarea class="form-control" id="message" name="message" rows="4" placeholder="Write your message" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Send Message</button>
+            </form>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h4>Our Contact Details</h4>
+                <p><strong>Address:</strong> 123 Learning Street, Lahore, Pakistan</p>
+                <p><strong>Email:</strong> support@educationwebsite.com</p>
+                <p><strong>Phone:</strong> +92 300 1234567</p>
+                <p><strong>Office Hours:</strong> Mon - Fri, 9:00 AM - 6:00 PM</p>
+
+                <!-- Social Media Links -->
+                <div class="mt-3">
+                    <a href="#" class="btn btn-outline-primary btn-sm me-2"><i class="fab fa-facebook"></i> Facebook</a>
+                    <a href="#" class="btn btn-outline-info btn-sm me-2"><i class="fab fa-twitter"></i> Twitter</a>
+                    <a href="#" class="btn btn-outline-danger btn-sm"><i class="fab fa-instagram"></i> Instagram</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Map -->
+    <div class="row my-5">
+        <div class="col">
+            <h4 class="text-center">Find Us on the Map</h4>
+            <div class="ratio ratio-16x9">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.747828253953!2d74.358747!3d31.520369!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39190483e49e4e2f%3A0x4b6ebc1b57f2c43e!2sLahore%2C%20Pakistan!5e0!3m2!1sen!2s!4v1707900000000" 
+                    width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add FontAwesome for Icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %}
+
+
+

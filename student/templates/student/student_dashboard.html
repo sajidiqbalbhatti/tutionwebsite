@@ -1,0 +1,74 @@
+{% extends "base_dashboard.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="text-center my-4">Student Dashboard</h2>
+
+    <div class="row g-4">
+        <!-- Total Courses Enrolled -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card bg-success text-white shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Courses Enrolled</h5>
+                    <p class="card-text fs-5">
+                        {% if user.is_authenticated and user.role == 'student' %}
+                            Enrolled in <strong>{{ courses_enrolled_count }}</strong> courses.
+                        {% else %}
+                            You are not enrolled in any courses.
+                        {% endif %}
+                    </p>
+                    {% if enrolled_courses %}
+                        <ul class="list-group list-group-flush">
+                            {% for course in enrolled_courses %}
+                                <li class="list-group-item bg-transparent border-light">
+                                    <a href="{% url 'courses:course_detail' course.id %}" class="text-white text-decoration-none">
+                                        {{ course.title }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No courses enrolled yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Classes -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card bg-primary text-white shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Upcoming Classes</h5>
+                    <p class="card-text fs-5">{{ upcoming_classes_count }} classes scheduled this week.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Courses -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card bg-warning text-white shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Completed Courses</h5>
+                    <p class="card-text fs-5">Successfully completed <strong>{{ completed_courses_count }}</strong> courses.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities Section -->
+    <h5 class="mt-5">Recent Activities</h5>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if recent_activities %}
+                <ul class="list-group list-group-flush">
+                    {% for activity in recent_activities %}
+                        <li class="list-group-item">{{ activity }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No recent activity.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

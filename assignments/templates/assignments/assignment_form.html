@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4 p-4">
+        <h2 class="text-center text-primary fw-bold mb-4">📤 Submit Assignment</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Please correct the errors below:</strong>
+                <ul>
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <li>{{ field.label }}: 
+                                {% for error in field.errors %}
+                                    <span>{{ error }}</span><br>
+                                {% endfor %}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <!-- Bootstrap Styled Form Fields -->
+            <div class="mb-3">
+                <label for="id_title" class="form-label fw-semibold">Title</label>
+                {{ form.title|add_class:"form-control" }}
+            </div>
+            
+            <div class="mb-3">
+                <label for="id_description" class="form-label fw-semibold">Description</label>
+                {{ form.description|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_course" class="form-label fw-semibold">Course</label>
+                {{ form.course|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_due_date" class="form-label fw-semibold">Due Date</label>
+                {{ form.due_date|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_max_marks" class="form-label fw-semibold">Max Marks</label>
+                {{ form.max_marks|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_file" class="form-label fw-semibold">Upload File</label>
+                {{ form.file|add_class:"form-control" }}
+                <small class="form-text text-muted">Allowed formats: PDF, DOCX, PPTX</small>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-success px-4 py-2 fw-bold">
+                    <i class="bi bi-upload"></i> Submit Assignment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Custom Styling -->
+<style>
+    body {
+        background: linear-gradient(to right, #f7f7f7, #ffffff);
+    }
+    .card {
+        max-width: 600px;
+        margin: auto;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        border-radius: 12px;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+    .btn-success {
+        transition: all 0.3s ease-in-out;
+    }
+    .btn-success:hover {
+        background-color: #28a745;
+        color: white;
+    }
+    .form-control {
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        transition: border 0.3s;
+    }
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    .invalid-feedback {
+        color: red;
+    }
+</style>
+
+{% endblock %}

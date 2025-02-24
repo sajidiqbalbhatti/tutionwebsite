@@ -1,0 +1,31 @@
+{% extends "base_dashboard.html" %}
+
+{% block content %}
+<h2>Parent Dashboard</h2>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Children's Progress</h5>
+                <p class="card-text">Review your children's progress in courses.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-secondary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Fee Payments</h5>
+                <p class="card-text">Pending fees: {{ pending_fees }}.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Support</h5>
+                <p class="card-text">Contact support for any issues.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container py-5">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h2 class="text-center text-danger mb-4">Confirm Course Deletion</h2>
+        <p class="text-center text-muted">Are you sure you want to delete the course: <strong>{{ object.name }}</strong>?</p>
+        <p class="text-center text-muted">This action cannot be undone.</p>
+
+        <div class="d-flex justify-content-center mt-4">
+          <a href="{% url 'courses:course_list' %}" class="btn btn-secondary me-3">Cancel</a>
+          <form method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Confirm Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

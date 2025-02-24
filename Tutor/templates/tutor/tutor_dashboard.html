@@ -1,0 +1,163 @@
+{% extends "base_dashboard.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-center bg-dark text-white py-5">
+    <h1 class="display-4">Instructor Dashboard</h1>
+    <p class="lead">Manage your subjects, schedules, and student engagement effortlessly.</p>
+</div>
+
+<div class="container-fluid mt-4 px-3">
+    <!-- Key Metrics Section -->
+    <div class="row g-4 text-center">
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card text-white bg-success shadow-lg border-0 hover-effect">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-book-reader"></i> Subjects Instructed</h5>
+                    <p class="card-text"><strong>{{ subjects_count }}</strong> subjects currently being taught.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card text-white bg-primary shadow-lg border-0 hover-effect">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-calendar-alt"></i> Upcoming Sessions</h5>
+                    <p class="card-text"><strong>{{ scheduled_classes_count }}</strong> sessions scheduled this week.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12">
+            <div class="card text-white bg-warning shadow-lg border-0 hover-effect">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-user-graduate"></i> Active Enrollments</h5>
+                    <p class="card-text">Guiding <strong>{{ active_students_count }}</strong> enrolled students.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enrolled Students and Assigned Subjects -->
+    <div class="row g-4 mt-4">
+        <!-- Enrolled Students Section -->
+        <div class="col-lg-6 col-md-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-users"></i> Enrolled Students</h5>
+                    {% if enrolled_students %}
+                        <ul class="list-group list-group-flush">
+                            {% for student in enrolled_students|slice:":4" %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center student-item">
+                                    <div class="d-flex align-items-center">
+                                        {% if student.is_active %}
+                                            <i class="fas fa-user-check text-success" title="Active Student"></i>
+                                        {% else %}
+                                            <i class="fas fa-user-times text-danger" title="Inactive Student"></i>
+                                        {% endif %}
+                                        <strong class="ms-2">{{ student.name }}</strong>
+                                    </div>
+                                    <small class="text-muted d-block">{{ student.email }}</small>
+                                    {% if student.enrolled_courses.count > 5 %}
+                                        <span class="badge bg-warning text-dark" title="More than 5 courses enrolled">
+                                            <i class="fas fa-star"></i> High Enrollment
+                                        </span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="text-center mt-3">
+                            <a href="{% url 'Tutor:tutor_dashboard' %}?view=enrolled_students" class="btn btn-primary">
+                                <i class="fas fa-eye"></i> View More
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No students enrolled yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Assigned Subjects Section -->
+        <div class="col-lg-6 col-md-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-chalkboard-teacher"></i> Assigned Subjects</h5>
+                    {% if tutor_subjects %}
+                        <ul class="list-group list-group-flush">
+                            {% for subject in tutor_subjects %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <i class="fas fa-book text-primary"></i> <span>{{ subject.name }}</span>
+                                <span class="badge bg-info">{{ subject.students.count }} students</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No subjects assigned yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="row g-4 mt-4">
+        <div class="col-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-bell"></i> Recent Activities</h5>
+                    <ul class="list-group">
+                        {% for activity in recent_activities %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ activity }}</span>
+                                <i class="fas fa-check-circle text-success"></i>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted text-center">No recent activities available.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    .hover-effect {
+        transition: transform 0.3s ease-in-out;
+    }
+    .hover-effect:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2);
+    }
+    .list-group-item:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
+    .student-item {
+        transition: all 0.3s ease-in-out;
+    }
+    .student-item:hover {
+        background: rgba(0, 0, 0, 0.05);
+        box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.15);
+    }
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.4em 0.8em;
+    }
+    @media (max-width: 768px) {
+        .card-title {
+            font-size: 1.2rem;
+        }
+        .card-text {
+            font-size: 0.9rem;
+        }
+        .list-group-item {
+            font-size: 0.9rem;
+        }
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.3em 0.6em;
+        }
+    }
+    
+</style>
+{% endblock %}

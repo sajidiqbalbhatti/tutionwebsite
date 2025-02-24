@@ -1,0 +1,6 @@
+<!-- templates/tutors/update_subjects.html -->
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Update Subjects</button>
+</form>
