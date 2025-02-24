@@ -1,19 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-4">
     <!-- Search Bar at the top -->
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-8 col-lg-6">
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-6">
             <form method="GET" action="{% url 'Tutor:product_search' %}">
                 <div class="input-group">
-                    <!-- Search input with custom left padding and focus effect -->
-                    <input type="text" name="query" class="form-control" placeholder="Search for tutors..." aria-label="Search Tutors" style="padding-left: 20px; border-radius: 20px;">
-    
-                    <!-- Search button with rounded corners and icon -->
-                    <button class="btn btn-primary" type="submit" style="border-radius: 20px;">
-                        <i class="bi bi-search"></i> <!-- Assuming you're using Bootstrap Icons for the search icon -->
-                    </button>
+                    <input type="text" name="query" class="form-control" placeholder="Search for tutors..." aria-label="Search Tutors">
+                    <button class="btn btn-primary" type="submit">Search</button>
                 </div>
             </form>
         </div>
