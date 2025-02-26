@@ -156,7 +156,7 @@
 
                         <!-- Tutor Bio -->
                         <p class="small text-muted px-3">
-                            "{{ tutor.bio|truncatewords:10 }}"
+                            "{{ tutor.bio|truncatewords:8 }}"
                         </p>
                     </div>
 
@@ -232,22 +232,22 @@
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8 col-12">
             <div class="card border-0 shadow-lg p-4 rounded-4 bg-white">
-                <form method="post">
+                <form method="post" action="{% url 'contact:feedback' %}">
                     {% csrf_token %}
                     
                     <div class="mb-3">
                         <label for="name" class="form-label fw-semibold">Your Name</label>
-                        <input type="text" class="form-control shadow-sm rounded-3" id="name" name="name" required>
+                        <input type="text" class="form-control shadow-sm rounded-3" id="name" name="username" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label fw-semibold">Your Email</label>
-                        <input type="email" class="form-control shadow-sm rounded-3" id="email" name="email" required>
+                        <input type="email" class="form-control shadow-sm rounded-3" id="email" name="useremail" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="message" class="form-label fw-semibold">Your Feedback</label>
-                        <textarea class="form-control shadow-sm rounded-3" id="message" name="message" rows="4" required></textarea>
+                        <textarea class="form-control shadow-sm rounded-3" id="message" name="feedback" rows="4" required></textarea>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm py-2 rounded-3">Submit Feedback</button>
@@ -272,7 +272,7 @@
     <div class="row">
         <!-- Contact Form -->
         <div class="col-md-6">
-            <form method="post">
+            <form method="post" action="{% url 'contact:contact' %}">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="name" class="form-label">Full Name</label>

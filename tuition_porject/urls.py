@@ -14,6 +14,7 @@ urlpatterns = [
     path('courses/',include('courses.urls')),
     path('student/',include('student.urls')),
     path('tutor/',include('Tutor.urls',namespace='tutor')),
+    path('contact/',include('contact.urls')),
   
     # path('live_classes/',include('live_classes.urls')),
     path('assessments/',include('assignments.urls')),

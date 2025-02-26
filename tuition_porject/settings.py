@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'payments',  # Course management apps
     'live_classes',
     'assignments',
+    'contact',
     
    
 ]
