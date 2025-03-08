@@ -1,69 +1,76 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container py-5 my-2">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <div class="card shadow-lg border-0 rounded-4 overflow-hidden mt-5">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
                 
                 {% if course.thumbnail %}
                 <div class="position-relative">
-                    <img src="{{ course.thumbnail.url }}" class="card-img-top img-fluid" style="max-height: 450px; object-fit: cover; border-bottom: 5px solid #ffc107;" alt="{{ course.title }}">
-                    <div class="position-absolute top-0 start-0 bg-primary text-white px-4 py-2 rounded-bottom-end fw-bold">
+                    <img src="{{ course.thumbnail.url }}" class="card-img-top img-fluid w-100" style="max-height: 450px; object-fit: cover; border-bottom: 4px solid #ffc107;" alt="{{ course.title }}">
+                    <div class="position-absolute top-0 start-0 bg-primary text-white px-4 py-2 rounded-bottom-end fw-bold shadow">
                         {{ course.category.name }}
                     </div>
                 </div>
                 {% endif %}
 
                 <div class="card-body p-4">
-                    <h1 class="card-title text-center fw-bold mb-3 text-uppercase">{{ course.title }}</h1>
-                    <p class="lead text-muted text-center">{{ course.description }}</p>
+                    <h1 class="text-center fw-bold text-uppercase mb-4">{{ course.title }}</h1>
+                    <p class="text-muted text-center lead">{{ course.description }}</p>
 
                     <div class="row g-4">
+                        <!-- Course Details Section -->
                         <div class="col-md-6">
-                            <div class="p-3 border rounded-3 bg-light shadow-sm">
-                                <h5 class="fw-bold"><i class="bi bi-info-circle-fill text-primary"></i> Course Details</h5>
+                            <div class="p-3 border rounded-3 bg-light shadow-sm h-100">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-info-circle-fill text-primary"></i> Course Details</h5>
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item"><strong><i class="bi bi-person-circle"></i> Tutor:</strong> {{ course.tutor.get_full_name }}</li>
-                                    <li class="list-group-item"><strong><i class="bi bi-book"></i> Subject:</strong> {{ course.subject }}</li>
-                                    <li class="list-group-item"><strong><i class="bi bi-layers"></i> Level:</strong> {{ course.get_course_level_display }}</li>
-                                    <li class="list-group-item"><strong><i class="bi bi-clock-history"></i> Duration:</strong> {{ course.duration }} hours</li>
+                                    <li class="list-group-item"><strong><i class="bi bi-person-circle me-2"></i>Tutor:</strong> {{ course.tutor.get_full_name }}</li>
+                                    <li class="list-group-item"><strong><i class="bi bi-book me-2"></i>Subject:</strong> {{ course.subject }}</li>
+                                    <li class="list-group-item"><strong><i class="bi bi-layers me-2"></i>Level:</strong> {{ course.get_course_level_display }}</li>
+                                    <li class="list-group-item"><strong><i class="bi bi-clock-history me-2"></i>Duration:</strong> {{ course.duration }} hours</li>
                                 </ul>
                             </div>
                         </div>
+
+                        <!-- Schedule & Fee Section -->
                         <div class="col-md-6">
-                            <div class="p-3 border rounded-3 bg-light shadow-sm">
-                                <h5 class="fw-bold"><i class="bi bi-calendar-event-fill text-success"></i> Schedule & Fee</h5>
+                            <div class="p-3 border rounded-3 bg-light shadow-sm h-100">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-calendar-event-fill text-success"></i> Schedule & Fee</h5>
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item"><strong><i class="bi bi-laptop"></i> Mode:</strong>
-                                        <select class="form-select mt-2">
-                                            <option selected disabled>Select Mode</option>
-                                            <option value="online">Online</option>
-                                            <option value="home">Home</option>
-                                            <option value="academy">Academy</option>
-                                        </select>
-                                    </li>
-                                    <li class="list-group-item"><strong><i class="bi bi-cash"></i> Fee:</strong> ${{ course.fee }}</li>
-                                    <li class="list-group-item"><strong><i class="bi bi-calendar-check"></i> Start Date:</strong> {{ course.start_date }}</li>
+                                    <li class="list-group-item"><strong><i class="bi bi-cash me-2"></i>Fee:</strong> ${{ course.fee }}</li>
+                                    <li class="list-group-item"><strong><i class="bi bi-calendar-check me-2"></i>Start Date:</strong> {{ course.start_date }}</li>
                                     {% if course.end_date %}
-                                    <li class="list-group-item"><strong><i class="bi bi-calendar-x"></i> End Date:</strong> {{ course.end_date }}</li>
+                                    <li class="list-group-item"><strong><i class="bi bi-calendar-x me-2"></i>End Date:</strong> {{ course.end_date }}</li>
+                                    <li class="list-group-item">
+                                        <strong><i class="bi bi-laptop me-2"></i>Mode:</strong>
+                                        <div class="d-flex flex-wrap gap-2 mt-2">
+                                            {% for mode in course.mode.all %}
+                                            <span class="badge bg-info text-dark px-3 py-2 shadow-sm">{{ mode.get_mode_display }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </li>
                                     {% endif %}
                                 </ul>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Enrolled Students Section -->
                     <div class="text-center mt-5">
                         <h4 class="fw-bold"><i class="bi bi-people-fill text-primary"></i> Total Enrolled Students</h4>
                         <p class="fw-bold text-primary display-5">{{ course.students.count }}</p>
                     </div>
 
+                    <!-- Course Content Section -->
                     <div class="mt-5 p-4 bg-light rounded-3 shadow-sm">
                         <h4 class="fw-bold"><i class="bi bi-journal-text"></i> Course Content</h4>
                         <p class="text-muted">{{ course.content }}</p>
                     </div>
 
-                    <div class="d-flex justify-content-center flex-wrap mt-4 gap-3">
+                    <!-- Action Buttons Section -->
+                    <div class="d-flex justify-content-center flex-wrap gap-3 mt-4">
+
                         {% if user.is_authenticated %}
                             {% if user in course.students.all %}
                                 <span class="btn btn-success shadow-sm px-4 py-2">Enrolled</span>
@@ -72,22 +79,23 @@
                                     <i class="bi bi-person-plus-fill me-2"></i> Login to Enroll
                                 </a>
                             {% endif %}
+
                             {% if user.is_superuser or user == course.teacher.user %}
                                 <a href="{% url 'courses:course_update' course.id %}" class="btn btn-warning shadow-sm px-4 py-2">
-                                    <i class="fas fa-edit me-2"> edit</i>
+                                    <i class="fas fa-edit me-2"></i> Edit
                                 </a>
                                 <a href="{% url 'courses:course_delete' course.id %}" class="btn btn-danger shadow-sm px-4 py-2">
-                                    <i class="fas fa-trash me-2"> Delete</i> 
+                                    <i class="fas fa-trash me-2"></i> Delete
                                 </a>
                             {% endif %}
                         {% else %}
-                            <a href="{% url 'users:login' %}" class="btn btn-primary shadow-sm px-4 py-2">
+                            {% comment %} <a href="{% url 'users:login' %}" class="btn btn-primary shadow-sm px-4 py-2">
                                 <i class="bi bi-person-plus-fill me-2"></i> Login to Enroll
-                            </a>
+                            </a> {% endcomment %}
                         {% endif %}
 
                         {% if user.is_authenticated and user.role == 'student' %}
-                        <form action="{% url 'student:enroll_course' course.id %}" method="post">
+                        <form action="{% url 'student:enroll_course' course.id %}" method="post" class="d-inline-block">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-success shadow-sm px-4 py-2">Enroll in Course</button>
                         </form>

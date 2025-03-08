@@ -15,7 +15,7 @@ class Assignment(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='assignments')
-    tutor = models.ForeignKey(TutorProfile, on_delete=models.CASCADE, related_name='created_assignments')  # Changed from User to TutorProfile
+    tutor = models.ForeignKey(TutorProfile, on_delete=models.CASCADE, related_name='created_assignments')
     due_date = models.DateTimeField()
     max_marks = models.PositiveIntegerField(default=100)  # Ensuring only positive marks
     file = models.FileField(upload_to='assignments/', blank=True, null=True)

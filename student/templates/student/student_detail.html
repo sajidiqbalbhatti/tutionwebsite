@@ -73,15 +73,31 @@
           </ul>
 
           <!-- Edit Profile Button -->
-          <div class="text-center mt-4">
+          {% comment %} <div class="text-center mt-4">
             {% if request.user == student.user %}
             <div class="mt-4">
-              <a href="{% url 'student:student_detail' student.pk %}" class="btn btn-primary px-4 py-2">
+              <a href="{% url 'student:student_update' student.pk %}" class="btn btn-primary px-4 py-2">
                 <i class="fas fa-edit me-2"></i>Edit Profile
               </a>
             </div>
           {% endif %}
+          </div> {% endcomment %}
+          <div class="text-center mt-4">
+            {% if request.user == student.user %}
+              <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <!-- Edit Profile Button -->
+                <a href="{% url 'student:student_update' student.pk %}" class="btn btn-primary btn-lg px-4 py-2 shadow-sm">
+                  <i class="fas fa-edit me-2"></i>Edit Profile
+                </a>
+          
+                <!-- Delete Profile Button (Triggers Modal) -->
+                <a href="{% url 'student:student-delete' %}" class="btn btn-danger"><i class="fas fa-trash-alt me-2 my-2"></i>Delete</a>
+
+              </div>
+            {% endif %}
           </div>
+          
+         
         </div>
       </div>
     </div>

@@ -69,11 +69,15 @@ class TutorView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return redirect('home_page')
 
 # Tutor Profile Creation View
+@method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name='dispatch')
+
 class TutorProfileCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = TutorProfile
     form_class = TutorProfileForm
     template_name = 'tutor/tutor_profile_create.html'
     success_url = reverse_lazy('home_page')
+    
+    
 
     def form_valid(self, form):
         """Handles valid form submission and prevents duplicate profiles."""

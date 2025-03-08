@@ -361,3 +361,19 @@ button:hover {
     border-color: #0056b3 !important;
     transition: all 0.3s ease-in-out;
 }
+
+.btn-custom {
+    background-color: #0056b3;
+    color: white;
+}
+.btn-custom:hover {
+    background-color: #004494;
+}
+
+.bio-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px; /* Professional smaller font size */
+    color: #6c757d; /* Bootstrap muted text color */
+    padding-left: 12px;
+    padding-right: 12px;
+}

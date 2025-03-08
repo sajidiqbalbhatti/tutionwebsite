@@ -2,24 +2,72 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container my-5">
-    {% comment %} <h1 class="text-center text-primary mb-4">Create a New Course</h1> {% endcomment %}
-
-    <!-- Row to center the form -->
+<div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg p-4">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {{ form|crispy }}
-                    <button type="submit" class="btn btn-primary btn-lg w-100">save</button>
-                </form>
-            </div>
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="mb-0">Create Student Profile</h2>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Profile creation form -->
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
 
-            <div class="text-center mt-4">
-                {% comment %} <a href="{% url student:student_list' %}" class="btn btn-outline-secondary">Back to Course List</a> {% endcomment %}
+                        <div class="row">
+                            {% for field in form %}
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label fw-bold"></label>
+                                    {{ field|as_crispy_field }}
+
+                                    {% if field.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in field.errors %}
+                                                <i class="bi bi-exclamation-circle"></i> {{ error }}<br>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success px-4 py-2">
+                                <i class="bi bi-check-circle me-2"></i>Create Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer text-center">
+                    <a href="{% url 'Tutor:tutor-profile-list' %}" class="btn btn-link text-primary fw-bold">
+                        <i class="bi bi-arrow-left me-1"></i>Back to Profile List
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Custom CSS for better styling -->
+<style>
+    input, select, textarea {
+        border-radius: 8px !important;
+        padding: 10px !important;
+    }
+    .btn-success {
+        font-size: 1.1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease-in-out;
+    }
+    .btn-success:hover {
+        background-color: #218838;
+    }
+    .text-danger {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+</style>
+
 {% endblock %}

@@ -28,6 +28,9 @@ INSTALLED_APPS = [
     
    
 ]
+USE_TZ = True  # This should be True (default in Django)
+TIME_ZONE = 'Asia/Karachi'  # Set this according to your local timezone
+
 
 INSTALLED_APPS += [
     'crispy_forms',

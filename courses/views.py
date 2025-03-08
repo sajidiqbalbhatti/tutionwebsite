@@ -1,4 +1,5 @@
 from email.charset import QP
+from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
@@ -33,6 +34,12 @@ class CourseCreateView(LoginRequiredMixin, CreateView):
         # Automatically assign the logged-in user as the course creator
         form.instance.tutor = self.request.user  # Adjust if assigning to students
         return super().form_valid(form)
+    def form_invalid(self, form):
+        messages.error(self.request, "There were errors in your form. Please correct them and try again.")
+        return self.render_to_response(self.get_context_data(form=form))
+    
+    def test_func(self):
+        return self.request.user.role == User.TUTOR
 
     def get_form(self, **kwargs):
         # Allow only tutors or students to create courses

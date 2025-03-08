@@ -1,6 +1,7 @@
 from django.db import models
 from Tutor.models import TutorProfile
 from django.contrib.auth import get_user_model
+from PIL import Image
 import logging
 
 # Configure logger
@@ -122,6 +123,31 @@ class Course(models.Model):
     end_date = models.DateField(null=True, blank=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     thumbnail = models.ImageField(upload_to='courses/thumbnails/', blank=True, null=True)
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # Save instance to make sure the file exists.
+
+        # Call resize after saving to ensure `self.thumbnail.path` exists
+        if self.thumbnail:
+            self.resize_image()
+
+        logger.info(f"Course '{self.title}' saved")
+
+    def resize_image(self):
+        try:
+            img = Image.open(self.thumbnail.path)
+
+            # Resize logic: Resize only if image is larger than 1200x600
+            if img.width > 1000 or img.height > 1000:
+                img.thumbnail((1000, 1000), Image.LANCZOS)  # Resize (keeping aspect ratio)
+                img.save(self.thumbnail.path, quality=95)
+
+        except Exception as e:
+            logger.error(f"Error resizing image for course '{self.title}': {e}")
+
+    def delete(self, *args, **kwargs):
+        logger.info(f"Course '{self.title}' deleted")
+        super().delete(*args, **kwargs)
+
     content = models.TextField(help_text='Course content or syllabus', blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

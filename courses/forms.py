@@ -9,7 +9,7 @@ class CourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = ('title', 'description', 'course_level', 'mode', 'duration', 'fee', 'start_date', 'end_date', 'is_active','created_by',)
+        fields = ('teacher','title', 'description', 'course_level','thumbnail','mode', 'duration', 'fee', 'start_date', 'end_date', 'is_active','created_by',)
 
     def save(self, commit=True):
         course = super().save(commit=False)  # Save course instance without committing to DB

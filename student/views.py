@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect,render
+from django.db import IntegrityError
 from django.views import View
-from django.views.generic import TemplateView, CreateView, UpdateView, DetailView, ListView
+from django.views.generic import TemplateView, CreateView, UpdateView, DetailView, ListView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.db.models import Q
@@ -31,29 +32,34 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
 
 
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name='dispatch')
-class StudentCreateView(LoginRequiredMixin, CreateView):
+class StudentCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     model = Student
     form_class = StudentForm
     template_name = 'student/student_form.html'
     success_url = reverse_lazy('student:student_list')
-
+    
     def form_valid(self, form):
-        # Assign the currently logged-in user to the student instance
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+        """Handles valid form submission and prevents duplicate profiles."""
+        try:
+            form.instance.user = self.request.user
+            return super().form_valid(form)
+        except IntegrityError:
+            messages.error(self.request, "A profile already exists for this user.")
+            return redirect('Tutor:tutor-profile-create')
 
+    def form_invalid(self, form):
+        messages.error(self.request, "There were errors in your form. Please correct them and try again.")
+        return self.render_to_response(self.get_context_data(form=form))
+    
     def test_func(self):
-        # Ensure the logged-in user matches the student instance's user
-        student = self.get_object()
-        return self.request.user == student.user
+        return self.request.user.role == User.STUDENT
 
-    def handle_no_permission(self):
-        if not self.request.user.is_authenticated:
-            # Redirect unauthenticated users to the login page
-            return redirect('users:login')
-        # Show a permission error message and redirect to the student list
-        messages.error(self.request, "You don't have permission to access this page.")
-        return redirect('home_page')
+    # def handle_no_permission(self):
+    #     if not self.request.user.is_authenticated:
+    #         return redirect('users:login')
+    #     messages.error(self.request, "You don't have permission to access this page.")
+    #     return redirect('home_page')
+   
 
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name='dispatch')
 class StudentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -100,8 +106,19 @@ class StudentView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             return redirect('users:login')
         messages.error(self.request, "You don't have permission to access this page.")
         return redirect('users:login')
+@method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name='dispatch')
 
+class StudentProfileDeleteView(LoginRequiredMixin, DeleteView):
+    model = Student
+    template_name = "student/student_confirm_delete.html"
+    success_url = reverse_lazy("home_page")  # Redirect to home after deletion
 
+    def get_object(self, queryset=None):
+        return self.request.user.student  # Delete the logged-in student's profile
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Your profile has been deleted successfully.")
+        return super().delete(request, *args, **kwargs)
 def search_student(request):
     query = request.GET.get('query', '').strip()
     students = []

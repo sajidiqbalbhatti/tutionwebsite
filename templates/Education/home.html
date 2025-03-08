@@ -15,7 +15,7 @@
 {% endblock %}
      <!-- swiper slider  -->
 {% block swiper %}
-<div class="container mt-4 ">
+<div class="container mt-3 ">
     <div class="swiper mySwiper">
         <div class="swiper-wrapper">
             <div class="swiper-slide"><img src="{% static 'imges/swiperv1.jpg' %}" alt="Slide 1"></div>
@@ -76,9 +76,9 @@
                         </a>
                     </p>
 
-                    <p class="card-text"><strong class="fw-bold me-2">Level:</strong> {{ course.get_course_level_display }}</p>
+                    <p class="text-muted small"><strong class="fw-bold me-2">Level:</strong> {{ course.get_course_level_display }}</p>
 
-                    <p class="text-muted small"><strong>Description:</strong> {{ course.description|truncatewords:10 }}</p>
+                    <p class="text-muted small"><strong>Description:</strong> {{ course.description|truncatewords:9 }}</p>
 
                     <div class="mb-3">
                         {% comment %} <strong class="fw-bold">Mode:</strong>
@@ -155,8 +155,8 @@
                         </div>
 
                         <!-- Tutor Bio -->
-                        <p class="small text-muted px-3">
-                            "{{ tutor.bio|truncatewords:8 }}"
+                        <p class="small text-muted px-3 bio-text">
+                            {{ tutor.bio|truncatewords:10 }}
                         </p>
                     </div>
 
@@ -314,8 +314,16 @@
         <div class="col">
             <h4 class="text-center">Find Us on the Map</h4>
             <div class="ratio ratio-16x9">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.747828253953!2d74.358747!3d31.520369!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39190483e49e4e2f%3A0x4b6ebc1b57f2c43e!2sLahore%2C%20Pakistan!5e0!3m2!1sen!2s!4v1707900000000" 
-                    width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                <iframe 
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3319.3579780766273!2d72.9930613762458!3d33.5371220472037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfec118e1a25e5%3A0x71cc624e9125cf9c!2sBahria%20Town%20Phase%208%2C%20Rawalpindi%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1709371764305!5m2!1sen!2s" 
+    width="600" 
+    height="450" 
+    style="border:0;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade">
+</iframe>
+
             </div>
         </div>
     </div>
