@@ -53,7 +53,7 @@
 
           <!-- Courses Section -->
           <h4 class="text-primary fw-bold">Courses Taught:</h4>
-          <ul class="list-group list-group-flush">
+          {% comment %} <ul class="list-group list-group-flush">
             {% for course in tutor.courses_taught.all %}
               <li class="list-group-item d-flex align-items-center">
                 <i class="fas fa-book text-primary me-2"></i>{{ course.title }}
@@ -61,7 +61,7 @@
             {% empty %}
               <li class="list-group-item text-muted">No courses taught.</li>
             {% endfor %}
-          </ul>
+          </ul> {% endcomment %}
 
           <!-- Edit Profile Button -->
           {% if request.user == tutor.user %}

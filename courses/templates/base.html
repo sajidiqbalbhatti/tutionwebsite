@@ -85,7 +85,7 @@
                     <li class="nav-item">
                         {% if request.user.is_authenticated %}
                             {% if request.user.role == "student" %}
-                                <a class="nav-link" href="{% url 'student:student_create' %}"><i class="fas fa-user-plus"></i></a>
+                                <a class="nav-link my-2" href="{% url 'student:student_create' %}"><i class="fas fa-user-plus"></i></a>
                             {% elif request.user.role == "tutor" %}
                                 <a class="nav-link my-2" href="{% url 'Tutor:tutor-profile-create' %}"><i class="fas fa-user-plus"></i></a>
                             {% endif %}

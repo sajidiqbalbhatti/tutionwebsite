@@ -62,7 +62,7 @@
           <!-- Enrolled Courses Section -->
           <h4 class="text-primary fw-bold">Enrolled Courses:</h4>
           <ul class="list-group list-group-flush">
-            {% for course in student.enrolled_courses.all %}
+            {% for course in enrolled_courses %}
               <li class="list-group-item d-flex align-items-center">
                 <i class="fas fa-book text-primary me-2"></i>
                 {{ course.title }}

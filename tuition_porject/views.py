@@ -7,6 +7,7 @@ class EducationHomepage(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["tutors"] = TutorProfile.objects.all()  # Fetch all tutors
-        context["courses"] = Course.objects.all()  # Fetch all courses
+        context["tutors"] = TutorProfile.objects.filter(is_featured=True)[:3]  # Fetch all tutors
+        context["courses"] = Course.objects.filter(is_featured=True)[:3]
+ # Fetch all courses
         return context

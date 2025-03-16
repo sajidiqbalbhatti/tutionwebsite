@@ -16,9 +16,9 @@ class SubjectAdmin(admin.ModelAdmin):
     list_filter = ('level',)
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('title', 'tutor','teacher', 'category', 'level', 'subject', 'created_at', 'updated_at')  # Removed 'price'
+    list_display = ('title','teacher','created_at', 'updated_at')  # Removed 'price'
     search_fields = ('title', 'tutor__username', 'category__name', 'level__choice', 'subject__subject_name')
-    list_filter = ('category', 'level', 'subject', 'created_at', 'course_level')
+    list_filter = ('created_at', 'course_level')
 
 
 # Register models with their respective admin classes

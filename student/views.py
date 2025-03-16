@@ -29,6 +29,13 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
     model = Student
     template_name = 'student/student_detail.html'
     context_object_name = 'student'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        student = self.get_object()
+
+        # ✅ Ensure courses are passed in context
+        context["enrolled_courses"] = student.enrolled_courses.all()  
+        return context
 
 
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name='dispatch')
@@ -82,21 +89,24 @@ class StudentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name='dispatch')
 class StudentView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'student/student_dashboard.html'
-    
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
 
-        # Count courses the user is enrolled in
+        # Check if user is a student
         if user.is_authenticated and hasattr(user, 'student'):
-            context['courses_enrolled_count'] = user.student.enrolled_courses.count()
-            context['enrolled_courses'] = user.student.enrolled_courses.all()  # List of enrolled courses
+            student = user.student  
+            context['courses_enrolled_count'] = student.enrolled_courses.count()  
+            context['enrolled_courses'] = student.enrolled_courses.all()  
         else:
             context['courses_enrolled_count'] = 0
-            context['enrolled_courses'] = [] 
+            context['enrolled_courses'] = []
+
+        return context  # Ensure you return context
+ 
         
-        return context
+        
 
     def test_func(self):
         return hasattr(self.request.user, 'role') and self.request.user.role == User.STUDENT
@@ -139,21 +149,7 @@ def search_student(request):
     })
     
     
-class EnrollInCourseView(LoginRequiredMixin, View):
-    def post(self, request, course_id):
-        course = get_object_or_404(Course, id=course_id)
 
-        if request.user.role == 'student':
-            # Check if the student is already enrolled
-            if course.students.filter(id=request.user.id).exists():  # Assuming 'students' is a related field in Course
-                messages.warning(request, f"You are already enrolled in {course.title}.")
-            else:
-                course.enroll_student(request.user)
-                messages.success(request, f"You have successfully enrolled in {course.title}")
-        else:
-            messages.error(request, "Only students can enroll in courses.")
-
-        return redirect('courses:course_detail', pk=course.id)
 
 
 

@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from courses.models import Course
+from Tutor.models import TutorProfile
 
 class Student(models.Model):
     # Define category choices
@@ -38,20 +39,25 @@ class Student(models.Model):
         blank=True,
         help_text="Select the academic level of the student."
     )
+    
+    
 
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     address = models.TextField(null=True, blank=True)
-    enrolled_courses = models.ManyToManyField('courses.Course', related_name="enrolled_students")
+    enrolled_courses = models.ManyToManyField(Course, related_name="enrolled_students")
     parent_name = models.CharField(max_length=100, null=True, blank=True)
     parent_contact = models.CharField(max_length=15, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    enrolled_tutors = models.ManyToManyField(TutorProfile, related_name='students')
+
 
     def __str__(self):
-        return f"{self.name} ({self.get_category_display()})"
+        courses = ", ".join(course.title for course in self.enrolled_courses.all()) or "No Courses"
+        return f"{self.user.username} ({courses})"
 
     class Meta:
         verbose_name = "Student"

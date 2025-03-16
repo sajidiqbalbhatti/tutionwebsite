@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TutorProfile, Subject
+from .models import TutorProfile, Subject,Enrollment
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
@@ -27,3 +27,4 @@ class TutorProfileAdmin(admin.ModelAdmin):
     get_subjects.short_description = 'Subjects'  # Column header in admin list view
 
 admin.site.register(TutorProfile, TutorProfileAdmin)
+admin.site.register(Enrollment)
