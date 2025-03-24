@@ -17,9 +17,11 @@ class Assignment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='assignments')
     tutor = models.ForeignKey(TutorProfile, on_delete=models.CASCADE, related_name='created_assignments')
     due_date = models.DateTimeField()
-    max_marks = models.PositiveIntegerField(default=100)  # Ensuring only positive marks
+    max_marks = models.PositiveIntegerField(default=40)  # Ensuring only positive marks
     file = models.FileField(upload_to='assignments/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_checked = models.BooleanField(default=False)  # Field to track checking status
+
 
     def __str__(self):
         return self.title
@@ -43,4 +45,9 @@ class AssignmentSubmission(models.Model):
         if self.assignment.due_date and self.submitted_at and self.submitted_at > self.assignment.due_date:
             self.is_late = True
 
+        super().save(*args, **kwargs)
+    
+    def save(self, *args, **kwargs):
+        if self.marks_obtained is not None:  # ✅ Mark as graded if marks are given
+            self.graded = True
         super().save(*args, **kwargs)

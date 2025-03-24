@@ -24,9 +24,14 @@
                             <i class="bi bi-file-earmark-text"></i> {{ assignment.title }}
                         </a>
                     </h5>
+                    
                     <p class="text-muted small">
                         <i class="bi bi-calendar-event"></i> <strong>Due Date:</strong>
                         <span class="fw-semibold text-danger">{{ assignment.due_date }}</span>
+                    </p>
+                    <p class="mb-1 text-secondary fw-semibold">
+                        <i class="bi bi-person"></i> Subject: 
+                        <span class="text-dark">{{ assignment.course.title }}</span>
                     </p>
                     <p class="mb-1 text-secondary fw-semibold">
                         <i class="bi bi-person"></i> Created by: 

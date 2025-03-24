@@ -5,6 +5,7 @@ from .models import Contact,Feedback
 # Create your views here.
 
 def contact_view(request):
+    contact=Contact.objects.all()
     if request.method=="POST":
         name = request.POST.get('name')
         email = request.POST.get('email')
@@ -17,10 +18,11 @@ def contact_view(request):
         else:
             messages.error(request, 'All fields are required!')
     
-    return render(request, 'Education/home.html')     
+    return render(request, 'contact/contact.html',{'contact':contact})     
 
 
 def feedback_view(request):
+    feedback=Feedback.objects.all()
     if request.method=='POST':
         username=request.POST.get('username')
         useremail=request.POST.get('useremail')
@@ -33,4 +35,4 @@ def feedback_view(request):
         else:
             messages.error(request, ' fields are required!')
         
-    return render(request, 'Education/home.html')
+    return render(request, 'feedback/feedback.html',{'feedback': feedback})

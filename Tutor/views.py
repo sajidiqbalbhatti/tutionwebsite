@@ -34,6 +34,8 @@ class TutorView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 'enrolled_students': enrolled_students,
                 'students_count': enrolled_students.count(),
             })
+            
+
         else:
             context.update({
                 'tutor_subjects': [],

@@ -31,3 +31,8 @@ class AssignmentSubmissionForm(forms.ModelForm):
         if file.size > 5 * 1024 * 1024:  # 5 MB file size limit
             raise forms.ValidationError('File size exceeds the 5MB limit.')
         return file
+
+class GradeAssignmentForm(forms.ModelForm):
+    class Meta:
+        model = AssignmentSubmission
+        fields = ['marks_obtained', 'feedback']

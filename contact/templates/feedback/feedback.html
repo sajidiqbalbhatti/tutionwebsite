@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<h2>Feedback</h2>
+<ul>
+    {% for fb in feedback %}
+        <li><strong>{{ fb.username }}</strong> ({{ fb.useremail }}) - {{ fb.feedback }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

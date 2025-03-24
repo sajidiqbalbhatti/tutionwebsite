@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Search Submissions</h2>
+
+    <!-- Search Form -->
+    <form method="GET" action="{% url 'assignments:search_assignment' %}" class="d-flex my-4">
+        <input type="text" name="search" class="form-control me-2"
+            placeholder="Search by student or assignment..." value="{{ search_query }}">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
+    </form>
+
+    {% if submissions %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Subject</th>
+                    <th>Student</th>
+                    <th>Assignment</th>
+                    <th>Submitted On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for submission in submissions %}
+                <tr>
+                    <td><span class="badge bg-secondary">{{ submission.assignment.course.title }}</span></td>
+                    <td class="fw-semibold">{{ submission.student.user.username }}</td>
+                    <td>{{ submission.assignment.title }}</td>
+                    <td>{{ submission.submitted_at|date:"d M Y, h:i A" }}</td>
+                    <td>
+                        <div class="btn-group">
+                            {% if submission.submitted_file %}
+                                <a href="{{ submission.submitted_file.url }}" class="btn btn-success btn-sm" download>
+                                    <i class="bi bi-download"></i> Download
+                                </a>
+                            {% else %}
+                                <span class="text-danger">No file</span>
+                            {% endif %}
+                            <a href="{% url 'assignments:submission_detail' submission.id %}" class="btn btn-info btn-sm">
+                                <i class="bi bi-eye"></i> Detail
+                            </a>
+                        </div>
+                        {% if submission.graded %}
+                        <span class="badge bg-success"><i class="fa fa-check"></i> Checked</span>
+
+                    {% else %}
+                        <a href="{% url 'assignments:grade_assignment' submission.id %}" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil-square"></i> Grade
+                        </a>
+                    {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="alert alert-warning text-center shadow-sm">
+            <i class="bi bi-exclamation-circle"></i> No submissions found for "{{ search_query }}".
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 col-md-6">
+    <div class="card shadow-lg">
+        <div class="card-header bg-dark text-white text-center">
+            <h4 class="mb-0">📘 Assignment: {{ submission.assignment.title }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Submitted by:</strong> {{ submission.student.user.get_full_name }}</p>
+                    <p><strong>Submitted at:</strong> {{ submission.submitted_at }}</p>
+                    <p><strong>Marks Obtained:</strong> {{ submission.marks_obtained|default:"Not graded yet" }}</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    {% if submission.submitted_file %}
+                        <a href="{{ submission.submitted_file.url }}" class="btn btn-outline-primary" target="_blank">
+                            📂 Download Submitted File
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if submission.submitted_text %}
+            <div class="mt-4 p-3 border rounded bg-light">
+                <h5 class="mb-2">📜 Submitted Text</h5>
+                <p class="text-muted">{{ submission.submitted_text }}</p>
+                <p>{{ graded }}</p>
+            </div>
+            {% endif %}
+
+            <hr class="my-4">
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_marks_obtained" class="form-label"><strong>Marks:</strong></label>
+                    <input type="number" name="marks_obtained" id="id_marks_obtained" class="form-control" value="{{ form.marks_obtained.value|default:'' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="id_feedback" class="form-label"><strong>Feedback:</strong></label>
+                    <textarea name="feedback" id="id_feedback" class="form-control" rows="4" required>{{ form.feedback.value|default:'' }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-success float-end">✅ Submit Grade</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
