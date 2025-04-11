@@ -31,7 +31,7 @@
                 </tr>
                 <tr>
                   <th scope="row" class="text-primary">Class:</th>
-                  <td>{{ student.lavel }}</td>
+                  <td>{{ student.level }}</td>
                 </tr>
                 <tr>
                   <th scope="row" class="text-primary">Phone:</th>
@@ -44,6 +44,10 @@
                 <tr>
                   <th scope="row" class="text-primary">Date of Birth:</th>
                   <td>{{ student.date_of_birth|date:"F d, Y" }}</td>
+                </tr>
+                <tr>
+                  <th scope="row" class="text-primary">Student Join Date:</th>
+                  <td>{{ student.created_at|date:"F j, Y" }}</td>
                 </tr>
                 <tr>
                   <th scope="row" class="text-primary">Parent's Name:</th>
@@ -96,7 +100,10 @@
               </div>
             {% endif %}
           </div>
-          
+            <!-- Back Button -->
+             <div class="text-center mt-5">
+               <a href="javascript:history.back()" class="btn btn-secondary">← Back</a>
+           </div>
          
         </div>
       </div>

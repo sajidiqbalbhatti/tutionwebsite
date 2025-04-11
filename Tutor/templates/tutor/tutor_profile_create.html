@@ -6,7 +6,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
             <div class="card shadow-lg border-0">
-                <div class="card-header bg-primary text-white text-center">
+                <div class="card-header bg-black text-white text-center">
                     <h2 class="mb-0">Create Tutor Profile</h2>
                 </div>
                 <div class="card-body">
@@ -17,18 +17,36 @@
 
                         <div class="row">
                             {% for field in form %}
-                                <div class="col-md-12 mb-3">
-                                    <label class="form-label fw-bold"></label>
-                                    {{ field|as_crispy_field }}
-
-                                    {% if field.errors %}
-                                        <div class="text-danger small mt-1">
-                                            {% for error in field.errors %}
-                                                <i class="bi bi-exclamation-circle"></i> {{ error }}<br>
+                                {% if field.name == 'subjects' %}
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label fw-bold">{{ field.label }}</label>
+                                        <div class="row">
+                                            {% for subject in field.field.queryset %}
+                                                <div class="col-md-3 mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="subjects" value="{{ subject.id }}" id="subject_{{ subject.id }}">
+                                                        <label class="form-check-label fw-bold" for="subject_{{ subject.id }}">
+                                                            {{ subject.name }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                {% if forloop.counter|divisibleby:4 %}</div><div class="row">{% endif %}
                                             {% endfor %}
                                         </div>
-                                    {% endif %}
-                                </div>
+                                    </div>
+                                {% else %}
+                                    <div class="col-md-12 mb-3">
+                                        {% comment %} <label class="form-label fw-bold">{{ field.label }}</label> {% endcomment %}
+                                        {{ field|as_crispy_field }}
+                                        {% if field.errors %}
+                                            {% comment %} <div class="text-danger small mt-1">
+                                                {% for error in field.errors %}
+                                                    <i class="bi bi-exclamation-circle"></i> {{ error }}<br>
+                                                {% endfor %}
+                                            </div> {% endcomment %}
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
                             {% endfor %}
                         </div>
 
@@ -54,7 +72,7 @@
 <style>
     input, select, textarea {
         border-radius: 8px !important;
-        padding: 10px !important;
+        padding: 5px !important;
     }
     .btn-success {
         font-size: 1.1rem;
@@ -67,6 +85,14 @@
     .text-danger {
         font-size: 0.9rem;
         font-weight: 500;
+    }
+    .form-check-label {
+        font-size: 1rem;
+        color: #333;
+    }
+    .form-check-input {
+        transform: scale(1.2);
+        margin-right: 2px;
     }
 </style>
 

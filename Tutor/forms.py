@@ -9,5 +9,5 @@ class TutorProfileForm(forms.ModelForm):
 
     class Meta:
         model = TutorProfile
-        fields = ['name', 'bio', 'education','subjects', 'certifications', 'experience_years', 'hourly_rate', 
-                  'languages_spoken', 'profile_picture', 'available_from', 'available_until']
+        fields = ['name', 'bio', 'education','subjects','certifications','phone_number','profile_picture','id_card_number','id_card_picture','city','experience_years', 'hourly_rate', 
+                  'languages_spoken','available_from', 'available_until','is_featured']

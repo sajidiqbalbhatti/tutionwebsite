@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container my-5">
-    <h1 class="text-center text-primary mb-4">Create a New Course</h1>
+    <h1 class="text-center text-primary mb-4  my-5">Create a New Course</h1>
 
     <!-- Row to center the form -->
     <div class="row justify-content-center">
@@ -16,9 +16,10 @@
                 </form>
             </div>
 
-            <div class="text-center mt-4">
-                <a href="{% url 'courses:course_list' %}" class="btn btn-outline-secondary">Back to Course List</a>
-            </div>
+            <!-- Back Button -->
+              <div class="text-center mt-5">
+                 <a href="javascript:history.back()" class="btn btn-secondary">← Back</a>
+              </div>
         </div>
     </div>
 </div>

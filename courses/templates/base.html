@@ -171,7 +171,7 @@
     {% block feedback %}{% endblock %}
 
       <!-- Footer -->
-  <footer class="bg-dark text-light pt-5 pb-4">
+  <footer class="bg-primary text-light pt-5 pb-4">
     <div class="container text-center text-md-start">
         <div class="row">
             <!-- Column 1: About -->
@@ -179,8 +179,9 @@
                 <h5 class="text-uppercase fw-bold">Company Name</h5>
                 <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #f8f9fa; height: 2px">
                 <p>
-                    Providing high-quality products & services. Stay connected with us for the latest updates.
+                    At <strong>EduMentor Online Tuition</strong>, we provide high-quality educational services. Stay connected with us for the latest updates.
                 </p>
+                
             </div>
 
             <!-- Column 2: Links -->
@@ -238,7 +239,7 @@
     <script src="{% static 'js/mainscript.js' %}"></script>
 
     <!-- Auto-dismiss Alert Script -->
-    <script>
+     <script>
         setTimeout(() => {
             let alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
@@ -246,6 +247,6 @@
                 bsAlert.close();
             });
         }, 3000); // 3 seconds
-    </script>
+    </script> 
 </body>
 </html>

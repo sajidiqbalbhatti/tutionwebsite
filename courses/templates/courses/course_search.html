@@ -3,80 +3,124 @@
 {% block content %}
 <section id="courses" class="container py-5">
     
-    
     <!-- Search Bar -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-md-6">
-            <form method="GET" action="{% url 'courses:search_results' %}">
-                <div class="input-group">
-                    <input type="text" name="q" class="form-control" placeholder="Search courses..." value="{{ request.GET.q }}">
-                    <button type="submit" class="btn btn-primary">Search</button>
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-6 my-5">
+            <form method="GET" action="{% url 'courses:search_results' %}" class="position-relative">
+                <div class="input-group shadow-sm rounded-pill">
+                    <input type="text" name="q" class="form-control rounded-pill ps-4 pe-5"
+                        placeholder="Search for students..." value="{{ request.GET.q }}">
+                    <div class="position-absolute end-0 d-flex align-items-center">
+                        {% if query %}
+                        <button type="button" class="btn btn-link text-danger p-0 me-3" onclick="clearSearch()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        {% endif %}
+                        <button class="btn btn-primary rounded-pill px-4" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div> 
                 </div>
             </form>
         </div>
     </div>
-    <br><br>
-    <h1 class="text-center">View Search Results..</h1>
-    <hr>
-    <div class="row g-4 my-5">
-        {% for course in courses %}
-        
-        <div class="col-lg-4 col-md-6 col-sm-12 d-flex">
-            <div class="card h-100 shadow-lg border-0 rounded-4 overflow-hidden w-100">
-                {% if course.thumbnail %}
-                <a href="{% url 'courses:course_detail' course.id %}" class="d-block overflow-hidden rounded-top-4 position-relative">
-                    <img src="{{ course.thumbnail.url }}" class="card-img-top img-fluid" alt="{{ course.title }}"
-                        style="object-fit: cover; height: 250px; width: 100%; transition: transform 0.3s ease-in-out; border-radius: 10px;">
-                </a>
-                {% endif %}
-                <div class="card-body d-flex flex-column text-center">  <!-- Centering content -->
-                    {% if course.teacher %}
-                    <p class="text-muted mb-1">
-                        <strong class="fw-bold me-4">Instructor:</strong>
-                        <a href="{% url 'Tutor:tutor-profile-detail' course.teacher.pk %}"
-                            class="text-decoration-none text-primary fw-semibold">
-                            {{ course.teacher.name }}
+    
+
+    <h1 class="text-center fw-bold">Search Results</h1>
+    <hr class="mb-5">
+    <script>
+        function clearSearch() {
+            document.querySelector('[name=q]').value = '';
+        }
+    </script>
+
+ <!-- Add Course Button (for Tutors) -->
+
+
+ <div class="row g-4">
+     {% for course in courses %}
+     <div class="col-lg-4 col-md-6 col-sm-12 d-flex">
+         <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden w-100 course-card">
+             {% if course.thumbnail %}
+             <a href="{% url 'courses:course_detail' course.id %}" class="position-relative d-block">
+                 <img src="{{ course.thumbnail.url }}" class="card-img-top img-fluid" alt="{{ course.title }}" 
+                     style="object-fit: cover; height: 220px; width: 100%; transition: transform 0.3s ease-in-out;">
+             </a>
+             {% endif %}
+
+             <div class="card-body d-flex flex-column text-center">
+                <li class="list-group-item">
+                    <strong><i class="bi bi-person-circle me-2"></i>Tutor:</strong>
+                    {% if course.created_by.tutorprofile %}
+                        <a href="{% url 'Tutor:tutor-profile-detail' course.created_by.tutorprofile.pk %}" class="text-decoration-none text-primary fw-semibold">
+                            {{ course.created_by.tutorprofile.name }}
                         </a>
-                    </p>
                     {% else %}
-                    <p class="text-danger fw-semibold">No Tutor Assigned</p>
+                        <p class="text-danger small fw-semibold">No Tutor Assigned</p>
                     {% endif %}
-    
-                    <p class="text-muted mb-1">
-                        <strong class="fw-bold me-4">Course:</strong>
-                        <a href="{% url 'courses:course_detail' course.id %}"
-                            class="text-decoration-none text-primary fw-semibold">
-                            {{ course.title }}
-                        </a>
-                    </p>
-    
-                    <p class="card-text"><strong class="fw-bold me-4">Level:</strong> {{ course.get_course_level_display }}</p>
-    
-                    <p class="text-muted small"><strong>Description:</strong> {{ course.description|truncatewords:6 }}</p>
-    
-                    <p class="mb-2">
-                        <strong class="fw-bold">Mode:</strong>
-                        <div class="d-flex justify-content-center">
-                            {% for mode in course.mode.all %}
-                            <span class="badge bg-gradient bg-info text-dark px-3 py-2 mx-1 shadow-sm">
-                                {{ mode.get_mode_display }}
-                            </span>
-                            {% endfor %}
-                        </div>
-                    </p>
-    
-                    <a href="{% url 'courses:course_detail' course.id %}"
-                        class="btn btn-primary mt-auto fw-semibold btn-lg shadow-sm px-4 py-2">
-                        View Detail
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <p class="text-center text-muted">No courses available at the moment.</p>
-        {% endfor %}
+                </li>
+
+                 <h5 class="fw-bold text-dark mb-1">
+                     <a href="{% url 'courses:course_detail' course.id %}" class="text-decoration-none text-dark">
+                         {{ course.title }}
+                     </a>
+                 </h5>
+
+                 <p class="text-muted mb-2 small"><strong>Level:</strong> {{ course.get_course_level_display }}</p>
+
+                 <div class="d-flex justify-content-center flex-wrap mb-2">
+                     {% for mode in course.mode.all %}
+                     <span class="badge bg-info text-dark me-1 mb-1 px-3 py-1">{{ mode.get_mode_display }}</span>
+                     {% endfor %}
+                 </div>
+
+                 <p class="text-muted small mb-3">
+                     <strong>Description:</strong> {{ course.description|truncatewords:10 }}
+                 </p>
+
+                 <a href="{% url 'courses:course_detail' course.id %}" 
+                     class="btn btn-primary mt-auto fw-semibold btn-sm shadow-sm px-4 py-2">
+                     View Detail
+                 </a>
+             </div>
+         </div>
+     </div>
+     {% empty %}
+     <div class="col-12 text-center">
+         <p class="text-muted">No courses available at the moment.</p>
+     </div>
+     {% endfor %}
+     <!-- Back Button -->
+    <div class="text-center mt-5">
+        <a href="javascript:history.back()" class="btn btn-secondary">← Back</a>
     </div>
-    
-    
+ </div>
 </section>
+
+<!-- Custom CSS for hover effect -->
+<style>
+ .course-card:hover img {
+     transform: scale(1.05);
+ }
+
+ .course-card {
+     transition: box-shadow 0.3s ease-in-out;
+ }
+
+ .course-card:hover {
+     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+ }
+
+ @media (max-width: 768px) {
+     .course-card {
+         margin-bottom: 20px;
+     }
+
+     .btn {
+         font-size: 0.9rem;
+         padding: 8px 16px;
+     }
+ }
+</style>
 {% endblock %}
+

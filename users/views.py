@@ -41,6 +41,8 @@ class AdminView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             User.objects.filter(role=User.STUDENT, date_joined__year=dt.year, date_joined__month=dt.month).count()
             for dt in month_year_pairs
         ]
+        
+    
 
         context.update({
             'total_users': User.objects.count(),

@@ -1,15 +1,11 @@
 from django.contrib import admin
-from .models import Student, Course
+from .models import Student
 
-@admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'enrolled_courses_display')  # Show enrolled courses in admin
+    list_display = ('user', 'name', 'phone', 'category', 'level', 'created_at')
+    list_filter = ('category', 'level', 'created_at')
+    search_fields = ('user__username', 'name', 'phone', 'parent_name')
+    ordering = ('-created_at',)
+    filter_horizontal = ('enrolled_courses', 'enrolled_tutors')
 
-    def enrolled_courses_display(self, obj):
-        if obj.enrolled_courses.exists():
-            return ", ".join([course.title for course in obj.enrolled_courses.all()])
-        return "-"
-
-    enrolled_courses_display.short_description = "Enrolled Courses"
-
-
+admin.site.register(Student, StudentAdmin)

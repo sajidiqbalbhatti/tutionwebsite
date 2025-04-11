@@ -1,10 +1,17 @@
 from django import forms
-from .models import Assignment, AssignmentSubmission
+from .models import Assignment, AssignmentSubmission,Course
 
 class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
         fields = ['title', 'description', 'course', 'due_date', 'max_marks', 'file']
+        
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user and hasattr(user, 'tutorprofile'):
+            self.fields['course'].queryset = Course.objects.filter(created_by=user)
+    
     
     # Custom validation for the file field to ensure the user uploads a file
     def clean_file(self):

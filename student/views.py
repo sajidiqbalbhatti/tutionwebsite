@@ -26,6 +26,8 @@ class StudentListView(LoginRequiredMixin, ListView):
     model = Student
     template_name = 'student/student_list.html'
     context_object_name = 'students'
+    
+   
 
 @CACHE_DECORATOR
 class StudentDetailView(LoginRequiredMixin, DetailView):
@@ -46,19 +48,22 @@ class StudentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     success_url = reverse_lazy('student:student_list')
 
     def form_valid(self, form):
-        try:
-            form.instance.user = self.request.user
-            return super().form_valid(form)
-        except IntegrityError:
-            messages.error(self.request, "A profile already exists for this user.")
-            return redirect('Tutor:tutor-profile-create')
+        if hasattr(self.request.user, 'student'):  # Check if student profile already exists
+             messages.error(self.request, "A profile already exists for this user.")
+             return redirect('student:student_list')  # Redirect to student list page
+    
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
 
     def form_invalid(self, form):
         messages.error(self.request, "There were errors in your form. Please correct them and try again.")
         return self.render_to_response(self.get_context_data(form=form))
 
     def test_func(self):
-        return self.request.user.role == User.STUDENT
+       return self.request.user.role.lower() == "student"
+
+
 
 @CACHE_DECORATOR
 class StudentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -115,22 +120,24 @@ class StudentProfileDeleteView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(request, "Your profile has been deleted successfully.")
         return super().delete(request, *args, **kwargs)
+    
+    
+
 
 
 def search_student(request):
-    query = request.GET.get('query', '').strip()
-    students = []
-    message = None
+    """Handles course search functionality."""
+    query = request.GET.get('query', '').strip()  # Get the search query, remove extra spaces
+    students = Student.objects.none()  # Default to an empty queryset
 
-    if len(query) >= 3:
-        students = Student.objects.filter(user__username__icontains=query)
-        if not students:
-            message = "No students found."
-    else:
-        message = "Please enter at least 3 characters to search."
+    if query and len(query) >= 3:
+        students = Student.objects.filter(
+            Q(name__icontains=query) |
+            Q(level__icontains=query) |
+            Q(enrolled_courses__title__icontains=query)
+            
+           
+        ).distinct()
 
-    return render(request, 'student/student_search.html', {
-        'students': students,
-        'query': query,
-        'message': message
-    })
+    return render(request, 'student/student_search.html', {'students': students, 'query': query})
+

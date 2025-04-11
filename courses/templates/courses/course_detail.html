@@ -25,8 +25,19 @@
                             <div class="p-3 border rounded-3 bg-light shadow-sm h-100">
                                 <h5 class="fw-bold mb-3"><i class="bi bi-info-circle-fill text-primary"></i> Course Details</h5>
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item"><strong><i class="bi bi-person-circle me-2"></i>Tutor:</strong> {{ course.tutor.get_full_name }}</li>
-                                    <li class="list-group-item"><strong><i class="bi bi-book me-2"></i>Subject:</strong> {{ course.subject }}</li>
+                                    {% comment %} <li class="list-group-item"><strong><i class="bi bi-person-circle me-2"></i>Tutor:</strong> {{ tutors.name }}</li> {% endcomment %}
+                                    <li class="list-group-item">
+                                        <strong><i class="bi bi-person-circle me-2"></i>Tutor:</strong>
+                                        {% if course.created_by.tutorprofile %}
+                                            <a href="{% url 'Tutor:tutor-profile-detail' course.created_by.tutorprofile.pk %}" class="text-decoration-none text-primary fw-semibold">
+                                                {{ course.created_by.tutorprofile.name }}
+                                            </a>
+                                        {% else %}
+                                            <p class="text-danger small fw-semibold">No Tutor Assigned</p>
+                                        {% endif %}
+                                    </li>
+                                    
+                                    <li class="list-group-item"><strong><i class="bi bi-book me-2"></i>Subject:</strong> {{ course.title }}</li>
                                     <li class="list-group-item"><strong><i class="bi bi-layers me-2"></i>Level:</strong> {{ course.get_course_level_display }}</li>
                                     <li class="list-group-item"><strong><i class="bi bi-clock-history me-2"></i>Duration:</strong> {{ course.duration }} hours</li>
                                 </ul>
@@ -59,12 +70,7 @@
                     <!-- Enrolled Students Section -->
                     <div class="text-center mt-5">
                         <h4 class="fw-bold"><i class="bi bi-people-fill text-primary"></i> Total Enrolled Students</h4>
-                        <p p class="fw-bold text-primary display-5">{{ course.enrolled_students.count }}</p> 
-                        {% comment %} <p class="fw-bold text-primary display-5">{% for student in course.enrolled_students.all %}
-                            <p>{{ student.name }}</p>
-                        {% endfor %}
-                        </p> {% endcomment %}
-
+                        <p class="fw-bold text-primary display-5">{{ course.enrolled_students.count }}</p>
                     </div>
 
                     <!-- Course Content Section -->
@@ -78,36 +84,30 @@
 
                         {% if user.is_authenticated %}
                             {% if user in course.students.all %}
-                                  <span class="btn btn-success shadow-sm px-4 py-2">Enrolled</span>
+                                <span class="btn btn-success shadow-sm px-4 py-2">Enrolled</span>
                             {% else %}
-                                <a href="{% url 'home_page' %}" 
-                                     class="btn btn-primary mt-auto fw-semibold btn-lg shadow-sm px-4 py-2 btn-hover">
-                                     <i class="fas fa-arrow-right"></i> Back
+                                <!-- Back Button -->
+                                <a href="javascript:history.back()" class="btn btn-secondary rounded-pill px-4 py-2 shadow-sm">
+                                    <i class="bi bi-arrow-left"></i> Back
                                 </a>
-                            
-                            
-                            
                             {% endif %}
-                    
 
-                            {% if user.is_superuser or user == course.teacher.user %}
-                                <a href="{% url 'courses:course_update' course.id %}" class="btn btn-warning shadow-sm px-4 py-2">
-                                    <i class="fas fa-edit me-2"></i> Edit
+                            {% if user.is_superuser or user == course.created_by %}
+                                <a href="{% url 'courses:course_update' course.id %}" class="btn btn-warning rounded-pill px-4 py-2 shadow-sm">
+                                    <i class="bi bi-pencil-square"></i> Edit
                                 </a>
-                                <a href="{% url 'courses:course_delete' course.id %}" class="btn btn-danger shadow-sm px-4 py-2">
-                                    <i class="fas fa-trash me-2"></i> Delete
+                                <a href="{% url 'courses:course_delete' course.id %}" class="btn btn-danger rounded-pill px-4 py-2 shadow-sm">
+                                    <i class="bi bi-trash-fill"></i> Delete
                                 </a>
                             {% endif %}
-                        {% else %}
-                            {% comment %} <a href="{% url 'users:login' %}" class="btn btn-primary shadow-sm px-4 py-2">
-                                <i class="bi bi-person-plus-fill me-2"></i> Login to Enroll
-                            </a> {% endcomment %}
                         {% endif %}
 
                         {% if user.is_authenticated and user.role == 'student' %}
                         <form action="{% url 'courses:enroll_course' course.id %}" method="post" class="d-inline-block">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-success shadow-sm px-4 py-2">Enroll in Course</button>
+                            <button type="submit" class="btn btn-success rounded-pill shadow-sm px-4 py-2">
+                                <i class="bi bi-box-arrow-in-right"></i> Enroll in Course
+                            </button>
                         </form>
                         {% endif %}
                     </div>

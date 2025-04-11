@@ -25,6 +25,7 @@ class AssignmentDetailView(LoginRequiredMixin, DetailView):
 
 # Tutor can create a new assignment
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name="dispatch")
+
 class AssignmentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Assignment
     form_class = AssignmentForm
@@ -37,10 +38,32 @@ class AssignmentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def handle_no_permission(self):
         messages.error(self.request, "You are not authorized to create assignments.")
         return redirect("users:login")
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         form.instance.tutor = self.request.user.tutorprofile
         return super().form_valid(form)
+
+    def form_valid(self, form):
+    # Retrieve the course instance
+        course = form.instance.course
+    
+        # Ensure the logged-in user is a tutor for this course
+        if self.request.user.tutorprofile not in course.tutors.all():
+            messages.error(self.request, "You can only create assignments for courses you are a tutor of.")
+            return redirect("assignments:assignment_list")
+        
+
+    # Proceed with saving the form, assigning the tutor to the assignment
+        form.instance.tutor = self.request.user.tutorprofile
+    
+        return super().form_valid(form)
+
+
 
 # Tutor can update an assignment
 class AssignmentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -58,12 +81,38 @@ class AssignmentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return redirect("assignments:assignment_list")
 
     def form_valid(self, form):
+        assignment = self.get_object()
+        course = form.cleaned_data['course']
+
+        # Ensure the tutor is updating an assignment for their own course
+        if self.request.user.tutorprofile not in course.tutors.all():
+            messages.error(self.request, "You can only update assignments for your own courses.")
+            return redirect("assignments:assignment_list")
+
+        form.instance.tutor = self.request.user.tutorprofile  # Ensuring the correct tutor is set
         messages.success(self.request, "Assignment updated successfully!")
         return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.error(self.request, "Update failed! Please correct the errors below.")
         return self.render_to_response(self.get_context_data(form=form))
+    
+    
+def assignment_tutor(request):
+    """Handles course search functionality."""
+    query = request.GET.get('query', '').strip()  # Get the search query, remove extra spaces
+    assignments = Assignment.objects.none()  # Default to an empty queryset
+
+    if query and len(query) >= 3:
+        assignments = Assignment.objects.filter(
+            Q(title__icontains=query) |
+            Q(tutor__name__icontains=query)|
+            Q(course__title__icontains=query)
+            
+           
+        ).distinct()
+
+    return render(request, 'assignments/search_assignments.html', {'assignments': assignments, 'query': query})
 
 # Students can submit assignments
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name="dispatch")

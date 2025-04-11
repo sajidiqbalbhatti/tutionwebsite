@@ -1,150 +1,212 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-</head>
-<body>
-    <div class="d-flex">
-        <!-- Sidebar -->
-        <nav class="sidebar bg-dark text-white p-3 vh-100 position-fixed" id="sidebar">
-            <h2 class="text-center">Admin Panel</h2>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a href="{% url 'home_page' %}" class="nav-link text-white"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white"><i class="fas fa-users"></i> Manage Users</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white"><i class="fas fa-file-alt"></i> Reports</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white"><i class="fas fa-cogs"></i> Settings</a>
-                </li>
-                <li class="nav-item">
-                    <form method="POST" action="{% url 'users:logout' %}">
-                        {% csrf_token %}
-                        <button class="btn btn-danger w-100 mt-3">Logout</button>
-                    </form>
-                </li>
-            </ul>
-        </nav>
-        <!-- Main Content -->
-        <div class="content flex-grow-1 p-4" style="margin-left: 250px;">
-            <header class="d-flex justify-content-between align-items-center mb-4">
-                <h1>Welcome, {{ request.user.first_name }}</h1>
-                <button class="btn btn-primary">New Action</button>
-            </header>
-            <div class="row">
-                <!-- Card Widgets -->
-                <div class="col-md-3">
-                    <div class="card text-white bg-primary mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Users</h5>
-                            <p class="card-text">{{ total_users }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card text-white bg-success mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Courses</h5>
-                            <p class="card-text">Total: {{ total_courses }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card text-white bg-warning mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">New Signups</h5>
-                            <p class="card-text">{{ new_signups }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card text-white bg-danger mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Pending Issues</h5>
-                            <p class="card-text">5</p>
-                        </div>
-                    </div>
+{% extends 'base_dashboard.html' %}
+
+{% block content %}
+<div class="content flex-grow-1 p-4">
+    <!-- Cards Section -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-4">
+        <div class="col">
+            <div class="card text-white bg-primary shadow-lg h-100">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h5 class="card-title mb-2">Total Users</h5>
+                    <p class="card-text mb-0">{{ total_users }}</p>
                 </div>
             </div>
-            <!-- Charts Section -->
-            <div class="row">
-                <div class="col-md-6">
-                    <canvas id="signupChart"></canvas>
-
+        </div>
+        <div class="col">
+            <div class="card text-white bg-success shadow-lg h-100">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h5 class="card-title mb-2">Courses</h5>
+                    <p class="card-text mb-0">Total: {{ total_courses }}</p>
                 </div>
-                <div class="col-md-6">
-                    <canvas id="signupChart"></canvas>
-
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-white bg-warning shadow-lg h-100">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h5 class="card-title mb-2">New Signups</h5>
+                    <p class="card-text mb-0">{{ new_signups }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-white bg-danger shadow-lg h-100">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h5 class="card-title mb-2">Pending Issues</h5>
+                    <p class="card-text mb-0">5</p>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <script type="application/json" id="months-data">{{ months|safe }}</script>
-    <script type="application/json" id="tutor-signups-data">{{ tutor_signups|safe }}</script>
-    <script type="application/json" id="student-signups-data">{{ student_signups|safe }}</script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Fetch JSON data
-            const months = JSON.parse(document.getElementById('months-data').textContent);
-            const tutorSignups = JSON.parse(document.getElementById('tutor-signups-data').textContent);
-            const studentSignups = JSON.parse(document.getElementById('student-signups-data').textContent);
+    <!-- Charts Section -->
+    <div class="row justify-content-center g-4 mt-4">
+        <div class="col-md-12 col-lg-6">
+            <div class="card shadow-lg h-100">
+                <div class="card-header bg-light text-center">
+                    <h5 class="mb-0">Signup Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="signupChart1"></canvas>
+                </div>
+            </div>
+        </div>
 
-            // Debugging: Check if data is correctly fetched
-            console.log("Months:", months);
-            console.log("Tutor Signups:", tutorSignups);
-            console.log("Student Signups:", studentSignups);
+        <div class="col-md-12 col-lg-6">
+            <div class="card shadow-lg h-100">
+                <div class="card-header bg-light text-center">
+                    <h5 class="mb-0">Signup Trends</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="signupChart2"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-            // Get chart context
-            const ctx = document.getElementById('signupChart').getContext('2d');
+<!-- Chart JS and Data Injection -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-            // Create the chart
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: months,
-                    datasets: [
-                        {
-                            label: 'Tutors',
-                            data: tutorSignups,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Students',
-                            data: studentSignups,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 2
-                        }
-                    ]
+<script type="application/json" id="months-data">{{ months|safe }}</script>
+<script type="application/json" id="tutor-signups-data">{{ tutor_signups|safe }}</script>
+<script type="application/json" id="student-signups-data">{{ student_signups|safe }}</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const months = JSON.parse(document.getElementById('months-data').textContent);
+    const tutorSignups = JSON.parse(document.getElementById('tutor-signups-data').textContent);
+    const studentSignups = JSON.parse(document.getElementById('student-signups-data').textContent);
+
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: { beginAtZero: true }
+        }
+    };
+
+    new Chart(document.getElementById('signupChart1'), {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Tutors',
+                    data: tutorSignups,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
+                {
+                    label: 'Students',
+                    data: studentSignups,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2
                 }
-            });
-        });
-    </script>
+            ]
+        },
+        options: commonOptions
+    });
 
-    
-</body>
-</html>
+    new Chart(document.getElementById('signupChart2'), {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Tutors',
+                    data: tutorSignups,
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2
+                },
+                {
+                    label: 'Students',
+                    data: studentSignups,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: commonOptions
+    });
+});
+</script>
+{% endblock %}
+
+<!-- Responsive Styles -->
+<style>
+.card {
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background-color: #f1f3f5;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 12px;
+}
+
+.card-body {
+    background-color: #fff;
+    padding: 20px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.card-text {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+canvas {
+    height: 300px !important;
+    width: 100% !important;
+}
+
+@media (max-width: 768px) {
+    .card-title {
+        font-size: 16px;
+    }
+
+    .card-text {
+        font-size: 20px;
+    }
+
+    canvas {
+        height: 250px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-title {
+        font-size: 14px;
+    }
+
+    .card-text {
+        font-size: 18px;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    canvas {
+        height: 200px !important;
+    }
+}
+</style>

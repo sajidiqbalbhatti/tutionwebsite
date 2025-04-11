@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, View
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from .models import Course
 from courses.forms import CourseForm
@@ -19,32 +19,37 @@ User = get_user_model()
 # Course Creation View
 # ============================
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name="dispatch")
-class CourseCreateView(LoginRequiredMixin, CreateView):
-    """Allows tutors to create a new course."""
+class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Course
     form_class = CourseForm
     template_name = "courses/course_form.html"
     success_url = reverse_lazy("courses:course_list")
 
-    def form_valid(self, form):
-        """Assigns the tutor profile to the course upon creation."""
-        tutor_profile = self.request.user.tutorprofile  
-        form.instance.save()  
-        form.instance.tutors.add(tutor_profile)  
-        return super().form_valid(form)
+    def get_form_kwargs(self):
+        """Pass the logged-in user to the form"""
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user  # ✅ Pass user to form
+        return kwargs
 
-    def form_invalid(self, form):
-        messages.error(self.request, "There were errors in your form. Please correct them and try again.")
-        return self.render_to_response(self.get_context_data(form=form))
+    def form_valid(self, form):
+        """Ensure only the logged-in tutor can create a course."""
+        if not hasattr(self.request.user, 'tutorprofile'):
+            messages.error(self.request, "You don't have a tutor profile.")
+            return self.form_invalid(form)
+
+        tutor_profile = self.request.user.tutorprofile
+        form.instance.created_by = self.request.user  # ✅ Assign creator
+
+        response = super().form_valid(form)  # 🔄 Course saved
+
+        # ✅ Add course to tutor profile
+        tutor_profile.courses.add(self.object)
+
+        return response
 
     def test_func(self):
-        return self.request.user.role == User.TUTOR
-
-    def get_form(self, **kwargs):
-        """Restricts course creation to authorized users only."""
-        if self.request.user.role not in User.TUTOR:
-            raise PermissionDenied("Only authorized users can create courses.")
-        return super().get_form(**kwargs)
+        """Ensures only tutors can create courses."""
+        return hasattr(self.request.user, 'tutorprofile')
 
 # ============================
 # Course List View
@@ -54,6 +59,16 @@ class CourseListView(ListView):
     model = Course
     template_name = "courses/course_list.html"
     context_object_name = "courses"
+    
+    def get_context_data(self, **kwargs):
+        """Adds enrollment status and tutor details to context data."""
+        context = super().get_context_data(**kwargs)
+
+       # Add tutor (created_by) name for each course in context
+        for course in context['courses']:
+           course.teacher_name = course.created_by.username  # 'created_by' is the tutor (User)
+    
+        return context
 
 # ============================
 # Course Detail View
@@ -68,6 +83,8 @@ class CourseDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         """Adds enrollment status to context data."""
         context = super().get_context_data(**kwargs)
+        
+        context['tutors'] = self.object.tutors.all()
         context["is_enrolled"] = self.request.user in self.object.students.all()
         return context
 
@@ -81,6 +98,25 @@ class CourseUpdateView(LoginRequiredMixin, UpdateView):
     form_class = CourseForm
     template_name = "courses/course_form.html"
     success_url = reverse_lazy("courses:course_list")
+    
+    def get_form_kwargs(self):
+        """Pass the logged-in user to the form"""
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user  # ✅ Pass user to form
+        return kwargs
+
+    def form_valid(self, form):
+        """Ensure only the logged-in tutor can create a course."""
+        if not hasattr(self.request.user, 'tutorprofile'):
+            messages.error(self.request, "You don't have a tutor profile.")
+            return self.form_invalid(form)
+
+        tutor_profile = self.request.user.tutorprofile
+        form.instance.teacher = tutor_profile  # ✅ Auto-assign teacher
+        form.instance.created_by = self.request.user  # ✅ Auto-assign created_by
+
+        return super().form_valid(form)
+
 
     def get_object(self, queryset=None):
         """Ensures tutors can only update their own courses."""
@@ -115,7 +151,7 @@ def SearchResultsView(request):
     if query and len(query) >= 3:
         courses = Course.objects.filter(
             Q(title__icontains=query) |       # Search by course title
-            Q(teacher__name__icontains=query) |  # Search by teacher name
+            Q(tutors__name__icontains=query) |  # Search by teacher name
             Q(mode__mode__icontains=query)   # Search by mode (ManyToManyField)
         ).distinct()
 

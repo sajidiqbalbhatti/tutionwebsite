@@ -43,6 +43,12 @@
                                     <i class="fas fa-book me-2"></i> Courses
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link fw-semibold" href="{% url 'student:student_list' %}">
+                                    <i class="fas fa-user-graduate"></i> Students
+
+                                </a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link fw-semibold dropdown-toggle" href="#" id="assignmentDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-tasks me-2"></i> Assignments
@@ -91,12 +97,12 @@
                                             <a class="dropdown-item py-2" href="{% url 'Tutor:tutor-profile-detail' pk=user.tutorprofile.pk %}">
                                                 <i class="fas fa-user-circle me-2"></i> Profile
                                             </a>
-                                        </li> {% endcomment %}
-                                        <li>
+                                        </li>  {% endcomment %}
+                                        {% comment %} <li>
                                             <a class="dropdown-item py-2" href="#">
                                                 <i class="fas fa-cog me-2"></i> Settings
                                             </a>
-                                        </li>
+                                        </li> {% endcomment %}
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
                                             <form method="post" action="{% url 'users:logout' %}" class="d-inline">

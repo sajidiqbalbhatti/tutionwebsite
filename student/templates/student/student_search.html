@@ -4,14 +4,14 @@
 <div class="container mt-4">
     <!-- Search Bar at the top -->
     <div class="row justify-content-center mb-4">
-        <div class="col-lg-5 col-md-7 col-12">
+        <div class="col-lg-5 col-md-7 col-12 my-4">
             <form method="GET" action="{% url 'student:student_search' %}" class="position-relative">
                 <div class="input-group shadow-sm rounded-pill">
                     <input type="text" name="query" class="form-control rounded-pill ps-4 pe-5"
                         placeholder="Search for tutors..." aria-label="Search Tutors" value="{{ query }}">
-                    <div class="position-absolute end-0 d-flex align-items-center me-2">
+                    <div class="position-absolute end-0 d-flex align-items-center ">
                         {% if query %}
-                        <button type="button" class="btn btn-link text-danger p-0 me-2"
+                        <button type="button" class="btn btn-link text-danger p-0 me-3"
                             onclick="clearSearch()">
                             <i class="fas fa-times"></i> <!-- Clear Button -->
                         </button>
@@ -40,36 +40,72 @@
 
     {% if query %}
         {% if students %}
-            <div class="row justify-content-center">
-                {% for student in students %}
-                    <div class="col-md-4 col-12 mb-4">
-                        <div class="card text-center shadow-lg rounded-pill h-100">
-                            <div class="card-body d-flex justify-content-between align-items-center p-3">
-                                <div class="me-3">
-                                    <h5>
-                                        <a href="{% url 'student:student_detail' student.pk %}" class="text-decoration-none text-dark">
-                                            {{ student.user.username }}
-                                        </a>
-                                    </h5>
-                                </div>
-                                <div>
-                                    <a href="{% url 'student:student_detail' pk=student.pk %}">
-                                        <img src="{{ student.profile_picture.url }}" 
-                                             alt="Profile Picture" 
-                                             class="rounded-circle shadow-lg border border-gray"
-                                             style="width: 50px; height: 50px;">
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for student in students %}
+            <div class="col">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+    
+                        <!-- Profile Picture -->
+                        <a href="{% url 'student:student_detail' pk=student.pk %}">
+                            <img src="{{ student.profile_picture.url }}" 
+                                 alt="{{ student.user.username }}'s Profile Picture" 
+                                 class="rounded-circle shadow border border-gray"
+                                 style="width: 60px; height: 60px; object-fit: cover;">
+                        </a>
+    
+                        <!-- Username -->
+                        <h5 class="card-title mt-2 mb-1">
+                            <strong style="color: #007bff; font-weight: 600;">Student:</strong>
+
+                            <a href="{% url 'student:student_detail' pk=student.pk %}" 
+                               class="text-decoration-none text-dark">
+                                {{ student.user.username }}
+                            </a>
+                        </h5>
+    
+                        <!-- Class Level -->
+                        
+                        <p class="small text-secondary mb-2">
+                            <strong> class:</strong>
+                            {{ student.level }}
+                        </p>
+    
+                        <!-- Enrolled Courses -->
+                        <p class="mb-2">
+                            {% if student.enrolled_courses.all %}
+                                {% for course in student.enrolled_courses.all %}
+                                    <span class="badge bg-light text-dark border">{{ course.title }}</span>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted">No enrolled courses</span>
+                            {% endif %}
+                        </p>
+    
+                        <!-- View Profile Button -->
+                        <a href="{% url 'student:student_detail' pk=student.pk %}" 
+                           class="btn btn-outline-primary btn-sm">
+                            View Profile
+                        </a>
+    
                     </div>
-                {% endfor %}
+                </div>
             </div>
+            {% empty %}
+            <div class="col">
+                <p class="text-muted text-center">No students found.</p>
+            </div>
+            {% endfor %}
+        </div>
         {% else %}
             <p class="text-center">No students found.</p>
         {% endif %}
     {% else %}
         <p class="text-center">Please enter a search query.</p>
     {% endif %}
+    <!-- Back Button -->
+    <div class="text-center mt-5">
+        <a href="javascript:history.back()" class="btn btn-secondary">← Back</a>
+     </div>
 </div>
 {% endblock %}

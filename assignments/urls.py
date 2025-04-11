@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AssignmentDeleteView, AssignmentListView, AssignmentDetailView, AssignmentCreateView, AssignmentSubmissionCreateView, AssignmentSubmissionDetailView, AssignmentUpdateView, GradeAssignmentView, TutorAssignmentSubmissionsView, submission_list
+from .views import AssignmentDeleteView, AssignmentListView, AssignmentDetailView, AssignmentCreateView, AssignmentSubmissionCreateView, AssignmentSubmissionDetailView, AssignmentUpdateView, GradeAssignmentView, TutorAssignmentSubmissionsView, submission_list,assignment_tutor
 
 app_name = 'assignments'
 
@@ -14,7 +14,8 @@ urlpatterns = [
     path('submissions/', TutorAssignmentSubmissionsView.as_view(), name='tutor_submissions'),
     path('submissions/<int:pk>/', AssignmentSubmissionDetailView.as_view(), name='submission_detail'),
     path('grade-assignment/<int:pk>/', GradeAssignmentView.as_view(), name='grade_assignment'),
-    path('search/',submission_list , name='search_assignment')
+    path('search/',submission_list , name='search_assignment'),
+    path('searchtutor/',assignment_tutor , name='search_tutor'),
 
 
 

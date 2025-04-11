@@ -104,14 +104,14 @@ class Course(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     
-    tutor = models.ForeignKey(
-        TutorProfile,
-        on_delete=models.CASCADE,
+    # tutor = models.ForeignKey(
+    #     "Tutor.TutorProfile",
+    #     on_delete=models.CASCADE,
         
-        related_name='courses_taught',
-        null=True,
-        blank=True,
-    )
+    #     related_name='courses_taught',
+    #     null=True,
+    #     blank=True,
+    # )
     
     students = models.ManyToManyField(
         "student.Student",
@@ -132,7 +132,7 @@ class Course(models.Model):
         Subject, on_delete=models.SET_NULL, null=True, related_name='courses'
     )
 
-    teacher = models.ForeignKey(TutorProfile, on_delete=models.CASCADE, null=True, blank=True)
+    # teacher = models.ForeignKey(TutorProfile, on_delete=models.CASCADE, null=True, blank=True, related_name='tutor_courses')
     
     mode = models.ManyToManyField(LearningModeOption)
     course_level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default='beginner')
