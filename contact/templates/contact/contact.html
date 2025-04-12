@@ -1,10 +1,56 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
-<h2>Contact Messages</h2>
-<ul>
-    {% for c in contact %}
-          <li><strong>{{ c.name }}</strong> ({{ c.email }}) - {{ c.message }}</li>
-    {% endfor %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="text-center mb-4">Contact Us</h2>
+            <p class="text-center">Have questions? Reach out to us, and we’ll get back to you as soon as possible.</p>
+        </div>
+    </div>
 
-</ul>
+    <div class="row">
+        <!-- Contact Form -->
+        <div class="col-md-6">
+            <form method="post" action="{% url 'contact:contact' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="message" class="form-label">Your Message</label>
+                    <textarea class="form-control" id="message" name="message" rows="4" placeholder="Write your message" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Send Message</button>
+            </form>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h4>Our Contact Details</h4>
+                <p><strong>Address:</strong> 123 Learning Street, Lahore, Pakistan</p>
+                <p><strong>Email:</strong> support@educationwebsite.com</p>
+                <p><strong>Phone:</strong> +92 300 1234567</p>
+                <p><strong>Office Hours:</strong> Mon - Fri, 9:00 AM - 6:00 PM</p>
+
+                <!-- Social Media Links -->
+                <div class="mt-3">
+                    <a href="#" class="btn btn-outline-primary btn-sm me-2"><i class="fab fa-facebook"></i> Facebook</a>
+                    <a href="#" class="btn btn-outline-info btn-sm me-2"><i class="fab fa-twitter"></i> Twitter</a>
+                    <a href="#" class="btn btn-outline-danger btn-sm"><i class="fab fa-instagram"></i> Instagram</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+
+        
+    </div>
+</div>
 {% endblock %}

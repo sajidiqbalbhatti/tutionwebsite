@@ -1,33 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container my-5">
 
-    <!-- Search Bar -->
-    <div class="row justify-content-center mb-4">
-        <div class="col-md-8 col-lg-6">
-            <form method="GET" action="{% url 'student:student_search' %}" class="position-relative">
-                <div class="input-group shadow-sm rounded-pill">
+    <!-- 🔍 Responsive Search Bar -->
+    <div class="row justify-content-center mb-4 my-5">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <form method="GET" action="{% url 'student:student_search' %}">
+                <div class="input-group shadow-sm rounded-pill position-relative">
                     <input 
                         type="text" 
                         name="query" 
-                        class="form-control rounded-pill ps-4 pe-5"
+                        class="form-control rounded-pill ps-4 pe-5" 
                         placeholder="Search for students..." 
                         value="{{ query }}"
                     >
-                    <div class="position-absolute end-0 d-flex align-items-center">
+
+                    <!-- Buttons (Clear + Search) -->
+                    <div class="position-absolute end-0 top-50 translate-middle-y d-flex align-items-center me-2 flex-wrap gap-1">
                         {% if query %}
                             <button 
                                 type="button" 
-                                class="btn btn-link text-danger p-0 me-3" 
-                                onclick="clearSearch()"
+                                class="btn btn-link text-danger p-0 me-2" 
+                                onclick="clearSearch()" 
+                                title="Clear"
                             >
                                 <i class="fas fa-times"></i>
                             </button>
                         {% endif %}
                         <button 
                             type="submit" 
-                            class="btn btn-primary rounded-pill px-4"
+                            class="btn btn-primary rounded-pill px-3 py-1"
+                            title="Search"
                         >
                             <i class="fas fa-search"></i>
                         </button>
@@ -37,77 +41,96 @@
         </div>
     </div>
 
-    <!-- Page Heading -->
+    <!-- 👥 Page Title -->
     <h2 class="text-center mb-4">Students</h2>
 
-    <!-- Student Cards Grid -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <!-- 📦 Student Grid -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-4">
         {% for student in students %}
-            <div class="col">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center">
+        <div class="col d-flex">
+            <div class="card h-100 w-100 border-0 shadow-sm">
+                <div class="card-body text-center">
 
-                        <!-- Profile Picture -->
-                        <a href="{% url 'student:student_detail' pk=student.pk %}">
-                            <img 
-                                src="{{ student.profile_picture.url }}" 
-                                alt="{{ student.user.username }}'s Profile Picture" 
-                                class="rounded-circle shadow border border-gray"
-                                style="width: 60px; height: 60px; object-fit: cover;"
-                            >
-                        </a>
+                    <!-- 🖼 Profile Picture -->
+                    <a href="{% url 'student:student_detail' pk=student.pk %}">
+                        <img 
+                            src="{{ student.profile_picture.url }}" 
+                            alt="{{ student.user.username }}'s Profile Picture"
+                            class="rounded-circle border shadow mb-3"
+                            style="width: 70px; height: 70px; object-fit: cover;"
+                        >
+                    </a>
 
-                        <!-- Username -->
-                        <h5 class="card-title mt-2 mb-1">
-                            <strong style="color: #007bff; font-weight: 600;">Student:</strong>
-
-                            <a 
-                                href="{% url 'student:student_detail' pk=student.pk %}" 
-                                class="text-decoration-none text-dark"
-                            >
-                                {{ student.user.username }}
-                            </a>
-                        </h5>
-
-                        <!-- Class Level -->
-                        <p class="small text-secondary mb-2">
-                            <strong>Class:</strong> {{ student.level }}
-                        </p>
-
-                        <!-- Enrolled Courses -->
-                        <p class="mb-2">
-                            {% if student.enrolled_courses.all %}
-                                {% for course in student.enrolled_courses.all %}
-                                    <span class="badge bg-light text-dark border">
-                                        {{ course.title }}
-                                    </span>{% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                <span class="text-muted">No enrolled courses</span>
-                            {% endif %}
-                        </p>
-
-                        <!-- View Profile Button -->
+                    <!-- 🧑 Name -->
+                    <h5 class="mb-1 text-primary fw-semibold">
+                        <span class="text-dark">Student:</span>
                         <a 
                             href="{% url 'student:student_detail' pk=student.pk %}" 
-                            class="btn btn-outline-primary btn-sm"
+                            class="text-decoration-none text-dark"
                         >
-                            View Profile
+                            {{ student.name }}
                         </a>
+                    </h5>
+
+                    <!-- 🎓 Class Level -->
+                    <p class="text-secondary small mb-2">
+                        <strong>Class:</strong> {{ student.level }}
+                    </p>
+
+                    <!-- 📚 Courses -->
+                    <div class="mb-3">
+                        {% if student.enrolled_courses.all %}
+                            {% for course in student.enrolled_courses.all %}
+                                <span class="badge bg-light text-dark border small mb-1">
+                                    {{ course.title }}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted small">No enrolled courses</span>
+                        {% endif %}
                     </div>
+
+                    <!-- 🔗 View Profile -->
+                    <a 
+                        href="{% url 'student:student_detail' pk=student.pk %}" 
+                        class="btn btn-outline-primary btn-sm"
+                    >
+                        View Profile
+                    </a>
                 </div>
             </div>
+        </div>
         {% empty %}
-            <div class="col">
-                <p class="text-muted text-center">No students found.</p>
-            </div>
+        <div class="col">
+            <p class="text-muted text-center">No students found.</p>
+        </div>
         {% endfor %}
     </div>
 
-    <!-- Back Button -->
+    <!-- 🔙 Back Button -->
     <div class="text-center mt-5">
         <a href="javascript:history.back()" class="btn btn-secondary">← Back</a>
     </div>
 
 </div>
+
+<!-- 🧼 Clear Search Script -->
+<script>
+    function clearSearch() {
+        const input = document.querySelector('input[name="query"]');
+        input.value = '';
+        input.form.submit();
+    }
+</script>
 {% endblock %}
+<style>
+    @media (max-width: 576px) {
+        .input-group > input {
+            font-size: 14px;
+        }
+        .input-group .btn {
+            padding: 0.4rem 0.7rem;
+        }
+    }
+    </style>
+    
