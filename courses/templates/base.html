@@ -29,9 +29,10 @@
         <div class="container">
             <!-- Brand Logo -->
             <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'home_page' %}">
-                <img src="{% static 'imges/images.png' %}" alt="Logo" width="45" height="45" class="me-2 rounded-circle shadow">
+                <img src="{% static 'imges/enducationlogo.jpg' %}" alt="Logo" class="img-fluid me-2 rounded-circle shadow" style="width: 100%; max-width: 50px; height: auto;">
                 <span class="fs-4">EduLearn</span>
             </a>
+            
 
             <!-- Mobile Toggle Button -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -114,11 +115,10 @@
                     
                 
                         <!-- Logout Button -->
-                        <form method="post" action="{% url 'users:logout' %}" class="ms-3">
+                        <form method="POST" action="{% url 'users:logout' %}">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm shadow-sm ms-2">
-                                <i class="fa-solid fa-right-from-bracket"></i> Logout
-                            </button>
+                            <button type="submit" class="btn btn-danger btn-sm shadow-sm ms-2">                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button> 
                         </form>
                     </li>
                 {% else %}

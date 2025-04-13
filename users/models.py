@@ -72,3 +72,10 @@ class UserManager(models.Manager):
 
         return self.create_user(username, password, **extra_fields)
 
+
+class LoginLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} logged in at {self.timestamp}"

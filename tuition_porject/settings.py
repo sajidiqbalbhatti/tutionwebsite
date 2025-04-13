@@ -120,3 +120,15 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'  # The directory where the static files w
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# # settings.py
+# # settings.py
+
+# # Admin email (for receiving notifications)
+# ADMIN_EMAIL = 'sajidiqbal.bk.8888@gmail.com'  # Isko actual email se replace karo
+
+# # Use console backend for development
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# DEFAULT_FROM_EMAIL = 'noreply@tuition.com'
+

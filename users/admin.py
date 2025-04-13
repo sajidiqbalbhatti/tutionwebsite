@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+from .models import User,LoginLog
 
 class CustomUserAdmin(UserAdmin):
     model = User
@@ -26,3 +26,8 @@ class CustomUserAdmin(UserAdmin):
 
 # Register the custom user model with the admin interface
 admin.site.register(User, CustomUserAdmin)
+
+@admin.register(LoginLog)
+class LoginLogAdmin(admin.ModelAdmin):
+    list_display = ('user', 'timestamp')
+    ordering = ('-timestamp',)

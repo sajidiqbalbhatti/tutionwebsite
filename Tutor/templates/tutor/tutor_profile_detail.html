@@ -32,6 +32,7 @@
                 <tr><th class="text-primary">Bio:</th><td>{{ tutor.bio|truncatewords_html:30 }}</td></tr>
                 <tr><th class="text-primary">Education:</th><td>{{ tutor.education }}</td></tr>
                 <tr><th class="text-primary">Certifications:</th><td>{{ tutor.certifications }}</td></tr>
+                <tr><th class="text-primary">ID CARD:</th><td>{{ tutor.id_card_number }}</td></tr>
                 <tr>
                   <th class="text-primary">Subjects:</th>
                   <td>
@@ -48,6 +49,7 @@
                 <tr><th class="text-primary">Languages:</th><td>{{ tutor.languages_spoken }}</td></tr>
                 <tr><th class="text-primary">Hourly Rate:</th><td>${{ tutor.hourly_rate }}</td></tr>
                 <tr><th class="text-primary">Available:</th><td>{{ tutor.available_from|date:"h:i A" }} - {{ tutor.available_until|date:"h:i A" }}</td></tr>
+                
                 <tr><th class="text-primary">Rating:</th><td>⭐ {{ tutor.rating }} / 5.0</td></tr>
               </tbody>
             </table>
