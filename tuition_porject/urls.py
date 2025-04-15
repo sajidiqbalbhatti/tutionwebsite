@@ -22,5 +22,7 @@ urlpatterns = [
          
 ]
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # 👇 Manually serve media in production-like local testing (Render will need proper setup too)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 # Base directory for the project
@@ -6,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security settings
 SECRET_KEY = 'django-insecure-gsutf%$^_2g(*!2@6dj-@rn_z2_sj)e!5#@-4w#muq#u+2r#eq'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'OnlineEduction.onrender.com']
 
 # Installed applications
 INSTALLED_APPS = [
@@ -25,12 +26,7 @@ INSTALLED_APPS = [
     'live_classes',
     'assignments',
     'contact',
-    
-   
 ]
-USE_TZ = True  # This should be True (default in Django)
-TIME_ZONE = 'Asia/Karachi'  # Set this according to your local timezone
-
 
 INSTALLED_APPS += [
     'crispy_forms',
@@ -43,6 +39,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 # Middleware settings
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # This line for serving static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,7 +73,15 @@ AUTH_USER_MODEL = 'users.User'
 
 # Media files settings
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Tells Django where your custom static files are
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Where collectstatic will collect into
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # For production (Render etc.)
 
 # WSGI application
 WSGI_APPLICATION = 'tuition_porject.wsgi.application'
@@ -91,7 +96,6 @@ DATABASES = {
         },
     }
 }
-
 
 # Authentication settings
 LOGIN_URL = 'users:login'
@@ -108,27 +112,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization settings
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Karachi'  # Set this according to your local timezone
 USE_I18N = True
 USE_TZ = True
 
 # Static files settings
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # Include your app-specific static directories here if necessary
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # The directory where the static files will be collected
-  # Directory where static files will be collected
-
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# # settings.py
-# # settings.py
-
-# # Admin email (for receiving notifications)
-# ADMIN_EMAIL = 'sajidiqbal.bk.8888@gmail.com'  # Isko actual email se replace karo
-
-# # Use console backend for development
+# Email settings (optional, uncomment if you need email configuration)
+# ADMIN_EMAIL = 'sajidiqbal.bk.8888@gmail.com'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # DEFAULT_FROM_EMAIL = 'noreply@tuition.com'
-
