@@ -1,16 +1,13 @@
-"""
-WSGI config for tuition_porject project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
-"""
-
+import sys
 import os
 
+# Replace this with the path to your project folder on PythonAnywhere
+path = '/home/sajidiqbal/tuition_project'
+if path not in sys.path:
+    sys.path.append(path)
+
+# Replace this with your actual Django settings module (folder.settings)
+os.environ['DJANGO_SETTINGS_MODULE'] = 'tuition_project.settings'
+
 from django.core.wsgi import get_wsgi_application
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tuition_porject.settings')
-
 application = get_wsgi_application()
