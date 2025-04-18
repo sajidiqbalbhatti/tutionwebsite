@@ -1,10 +1,20 @@
+version: '3.9'
+
 services:
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
+    image: sajid913/educationwebsite
     ports:
       - "8001:8000"
+    volumes:
+      - .:/app
+      - ./db.sqlite3:/app/db.sqlite3
+    command: >
+      sh -c "
+        python manage.py migrate &&
+        python manage.py collectstatic --noinput &&
+        gunicorn tuition_porject.wsgi:application --bind 0.0.0.0:8000
+      "
     environment:
-      - DEBUG=True
+      - DEBUG=False
+    restart: always  # Container ko automatically restart karne ke liye

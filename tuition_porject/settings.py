@@ -2,12 +2,6 @@ import os
 from pathlib import Path
 
 # Base directory for the project
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Security settings
-SECRET_KEY = 'django-insecure-gsutf%$^_2g(*!2@6dj-@rn_z2_sj)e!5#@-4w#muq#u+2r#eq'
-DEBUG = False
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'OnlineEduction.onrender.com']
 
 # Installed applications
 INSTALLED_APPS = [
@@ -26,13 +20,11 @@ INSTALLED_APPS = [
     'live_classes',
     'assignments',
     'contact',
-]
-
-INSTALLED_APPS += [
     'crispy_forms',
     'crispy_bootstrap5',  # For Bootstrap 5 compatibility
 ]
 
+# Crispy Forms settings
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
@@ -70,6 +62,13 @@ TEMPLATES = [
 
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Security settings
+SECRET_KEY = 'django-insecure-gsutf%$^_2g(*!2@6dj-@rn_z2_sj)e!5#@-4w#muq#u+2r#eq'
+DEBUG = True
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'OnlineEduction.onrender.com']
+
 
 # Media files settings
 MEDIA_URL = '/media/'
@@ -116,7 +115,7 @@ TIME_ZONE = 'Asia/Karachi'  # Set this according to your local timezone
 USE_I18N = True
 USE_TZ = True
 
-# Static files settings
+# Default auto field setting
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email settings (optional, uncomment if you need email configuration)

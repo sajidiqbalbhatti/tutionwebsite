@@ -1,26 +1,27 @@
 # Use official Python image
-FROM python:3.12-slim
+FROM python:3.12-slim as base
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Set work directory
+# Set working directory
 WORKDIR /app
 
 # Install dependencies
-COPY requirements.txt .
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+COPY requirements.txt ./
+RUN pip install --upgrade pip \
+    && pip install -r requirements.txt
 
 # Copy project files
 COPY . .
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Run migrations and collectstatic before starting the app
+RUN python manage.py makemigrations \
+    && python manage.py migrate \
+    && python manage.py collectstatic --noinput
 
-# Expose port
+# Expose port 8000 for the application
 EXPOSE 8000
 
-# Start app with static file serving (for development)
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000 --insecure"]
+# Run Gunicorn server in production
+CMD ["gunicorn", "tuition_porject.wsgi:application", "--bind", "0.0.0.0:8000"]
