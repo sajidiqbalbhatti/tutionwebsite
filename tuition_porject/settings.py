@@ -68,13 +68,12 @@ AUTH_USER_MODEL = 'users.User'
 # Security settings
 SECRET_KEY = 'django-insecure-gsutf%$^_2g(*!2@6dj-@rn_z2_sj)e!5#@-4w#muq#u+2r#eq'
 
-DEBUG = True 
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    'sajidiqbal.pythonanywhere.com',  # For deployment on PythonAnywhere
+    'sajidiqbal.pythonanywhere.com',  # Production domain
 ]
+
 
 # Define the URL path for serving static files
 import os
