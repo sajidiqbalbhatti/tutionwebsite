@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
+import socket
 
 # Base directory for the project
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Installed applications
 INSTALLED_APPS = [
@@ -62,26 +64,49 @@ TEMPLATES = [
 
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security settings
 SECRET_KEY = 'django-insecure-gsutf%$^_2g(*!2@6dj-@rn_z2_sj)e!5#@-4w#muq#u+2r#eq'
 
-DEBUG = False  
+DEBUG = True 
 
-ALLOWED_HOSTS = ['sajidiqbal.pythonanywhere.com']
-
-# Media files settings
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Tells Django where your custom static files are
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'sajidiqbal.pythonanywhere.com',  # For deployment on PythonAnywhere
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Where collectstatic will collect into
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # For production (Render etc.)
+
+# Define the URL path for serving static files
+import os
+from pathlib import Path
+import socket
+
+# Base directory for the project
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Static URL
+STATIC_URL = '/static/'
+
+# Define static and media file paths for local and production environments
+hostname = socket.gethostname()
+
+if 'pythonanywhere' in hostname:
+    # For PythonAnywhere (production)
+    STATIC_ROOT = '/home/sajidiqbal/tuition_project/static/'
+    MEDIA_ROOT = '/home/sajidiqbal/tuition_project/media/'
+else:
+    # For local development
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Add this line to define STATIC_ROOT
+
+# For production (using WhiteNoise)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Collect static files to the STATIC_ROOT directory
+
+
+
 
 # WSGI application
 WSGI_APPLICATION = 'tuition_porject.wsgi.application'
