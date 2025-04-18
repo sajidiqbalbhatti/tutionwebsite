@@ -66,9 +66,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security settings
 SECRET_KEY = 'django-insecure-gsutf%$^_2g(*!2@6dj-@rn_z2_sj)e!5#@-4w#muq#u+2r#eq'
-DEBUG = True
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'OnlineEduction.onrender.com']
 
+DEBUG = False  
+
+ALLOWED_HOSTS = ['sajidiqbal.pythonanywhere.com']
 
 # Media files settings
 MEDIA_URL = '/media/'
