@@ -109,6 +109,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # WSGI application
 WSGI_APPLICATION = 'tuition_porject.wsgi.application'
+ROOT_URLCONF = 'tuition_porject.urls'
+
 
 # Database configuration (SQLite)
 DATABASES = {
