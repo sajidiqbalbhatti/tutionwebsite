@@ -68,11 +68,14 @@ AUTH_USER_MODEL = 'users.User'
 # Security settings
 SECRET_KEY = 'django-insecure-gsutf%$^_2g(*!2@6dj-@rn_z2_sj)e!5#@-4w#muq#u+2r#eq'
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'sajidiqbal.pythonanywhere.com',  # Production domain
+    'localhost',  # Localhost for development
+    '127.0.0.1',  # Localhost IP
 ]
+
 
 
 # Define the URL path for serving static files
@@ -107,9 +110,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 
-# WSGI application
-WSGI_APPLICATION = 'tuition_porject.wsgi.application'
-ROOT_URLCONF = 'tuition_porject.urls'
 
 
 # Database configuration (SQLite)
