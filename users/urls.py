@@ -11,7 +11,7 @@ from .views import (
 app_name = 'users'
 
 urlpatterns = [
-    path('admin_dashboard/', AdminView.as_view(), name='admin_dashboard'),
+    path('', AdminView.as_view(), name='admin_dashboard'),
     
     
     path('parent_dashboard/', ParentView.as_view(), name='parent_dashboard'),
