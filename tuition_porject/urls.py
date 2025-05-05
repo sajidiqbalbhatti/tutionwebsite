@@ -4,13 +4,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path,include
 
-from .views import EducationHomepage
+
 
 
 urlpatterns = [
-    path('', EducationHomepage.as_view(),name='home_page'),
+    
     path('admin/', admin.site.urls),
     path('users/',include('users.urls')),
+    path('',include('Home.urls')),
     path('courses/',include('courses.urls')),
     path('student/',include('student.urls')),
     path('tutor/',include('Tutor.urls',namespace='tutor')),
