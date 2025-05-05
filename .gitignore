@@ -2,7 +2,10 @@
 *.sqlite3
 
 # Ignore Django migrations
-**/migrations/
+# Ignore Django migrations EXCEPT the __init__.py file
+**/migrations/*
+!**/migrations/__init__.py
+
 
 # Ignore compiled Python files
 *.pyc
