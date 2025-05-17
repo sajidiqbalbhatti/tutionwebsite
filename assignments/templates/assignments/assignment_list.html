@@ -5,28 +5,28 @@
 <div class="container mt-5">
      <!-- Search Bar -->
      <div class="row justify-content-center mb-4 ">
-        <div class="col-md-8 col-lg-6 my-3">
+        <div class="col-md-8 col-lg-6 my-5">
             <form method="GET" action="{% url 'assignments:search_tutor' %}" class="position-relative">
                 <div class="input-group shadow-sm rounded-pill">
-                    <input 
-                        type="text" 
-                        name="query" 
+                    <input
+                        type="text"
+                        name="query"
                         class="form-control rounded-pill ps-4 pe-5"
-                        placeholder="Search for assignment..." 
+                        placeholder="Search for assignment..."
                         value="{{ query }}"
                     >
                     <div class="position-absolute end-0 d-flex align-items-center">
                         {% if query %}
-                            <button 
-                                type="button" 
-                                class="btn btn-link text-danger p-0 me-3" 
+                            <button
+                                type="button"
+                                class="btn btn-link text-danger p-0 me-3"
                                 onclick="clearSearch()"
                             >
                                 <i class="fas fa-times"></i>
                             </button>
                         {% endif %}
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             class="btn btn-primary rounded-pill px-4"
                         >
                             <i class="fas fa-search"></i>
@@ -34,7 +34,7 @@
                     </div>
                 </div>
             </form>
-            
+
         </div>
     </div>
 
@@ -59,17 +59,17 @@
                             <i class="bi bi-file-earmark-text"></i> {{ assignment.title|truncatewords:3 }}
                         </a>
                     </h5>
-                    
+
                     <p class="text-muted small">
                         <i class="bi bi-calendar-event"></i> <strong>Due Date:</strong>
                         <span class="fw-semibold text-danger">{{ assignment.due_date }}</span>
                     </p>
                     <p class="mb-1 text-secondary fw-semibold">
-                        <i class="bi bi-person"></i> Subject: 
+                        <i class="bi bi-person"></i> Subject:
                         <span class="text-dark">{{ assignment.course.title|truncatechars:20 }}</span>
                     </p>
                     <p class="mb-1 text-secondary fw-semibold">
-                        <i class="bi bi-person"></i> Created by: 
+                        <i class="bi bi-person"></i> Created by:
                         <span class="text-dark">{{ assignment.tutor.name|truncatechars:20 }}</span>
                     </p>
                     <div class="d-grid">

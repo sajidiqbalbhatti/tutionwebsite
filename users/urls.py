@@ -12,8 +12,6 @@ app_name = 'users'
 
 urlpatterns = [
     path('', AdminView.as_view(), name='admin_dashboard'),
-    
-    
     path('parent_dashboard/', ParentView.as_view(), name='parent_dashboard'),
     path('forbidden/', TemplateView.as_view(template_name='users/forbidden.html'), name='forbidden'),
     path('logout/', LogoutView.as_view(next_page='home_page'), name='logout'),

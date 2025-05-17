@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_title|default:_('Django Admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Online Tuition Admin</a></h1>
+{% endblock %}
+
+{% block content %}
+  {% if unread_notifications %}
+    <div class="alert alert-warning border-start border-4 border-warning shadow-sm mb-4">
+      <h5 class="mb-3">
+        🔔 You have {{ unread_notifications.count }} unread notification{{ unread_notifications.count|pluralize }}:
+      </h5>
+      <ul class="list-group">
+        {% for notification in unread_notifications %}
+          <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start">
+            <div class="text-truncate" style="max-width: 100%;" title="{{ notification.message|striptags }}">
+              {{ notification.message|safe }}
+            </div>
+            <small class="text-muted mt-1 mt-md-0 ms-md-3">
+              {{ notification.created_at|date:"M d, H:i" }}
+            </small>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}

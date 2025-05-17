@@ -1,25 +1,18 @@
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, UpdateView
 from django.shortcuts import get_object_or_404, redirect
-from .models import Notification
+from Notification.models import Notification
+from users.models import User  # make sure correct path
 
-class NotificationListView(LoginRequiredMixin, ListView):
-    model = Notification
-    template_name = 'notifications/notification_list.html'
-    context_object_name = 'notifications'
-    ordering = ['-created_at']
+def mark_notification_as_read(request, pk):
+    notification = get_object_or_404(Notification, pk=pk, user=request.user)
+    notification.is_read = True
+    notification.save()
 
-    def get_queryset(self):
-       return Notification.objects.filter(recipient=self.request.user)
+    # Define redirects just like get_success_url
+    role_redirects = {
+        User.ADMIN: 'users:admin_dashboard',
+        User.TUTOR: 'Tutor:tutor_dashboard',
+        User.STUDENT: 'student:student_dashboard',
+        User.PARENT: 'users:parent_dashboard',
+    }
 
-
-class MarkNotificationAsReadView(LoginRequiredMixin, UpdateView):
-    model = Notification
-    fields = []  # No form fields needed, just updating is_read
-
-    def get(self, request, *args, **kwargs):
-        notification = get_object_or_404(Notification, id=self.kwargs['pk'], recipient=self.request.user)
-        notification.is_read = True
-        notification.save()
-        return redirect(reverse_lazy('notifications:list'))
+    return redirect(role_redirects.get(request.user.role, 'home_page'))  # fallback to home_page

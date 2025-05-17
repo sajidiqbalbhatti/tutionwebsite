@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
-    
+
     <!-- Hero Section -->
-   
+
 
 {% block hero %}
     <header class="hero bg-light text-center text-dark py-5">
@@ -15,15 +15,15 @@
 {% endblock %}
      <!-- swiper slider  -->
 {% block swiper %}
-<div class="container mt-5">
+<div class="container mt-5 mt-md-2">
     <div class="swiper mySwiper">
         <div class="swiper-wrapper">
             <div class="swiper-slide"><img src="{% static 'imges/swiperv1.jpg' %}" alt="Slide 1"></div>
             <div class="swiper-slide"><img src="{% static 'imges/swiperh3.jpg' %}" alt="Slide 1"></div>
             <div class="swiper-slide"><img src="{% static 'imges/teacher.jpg' %}" alt="Slide 1"></div>
             <div class="swiper-slide"><img src="{% static 'imges/online.jpg' %}" alt="Slide 1"></div>
-           
-            
+
+
         </div>
 
         <!-- Pagination -->
@@ -45,17 +45,17 @@
         {% for course in courses|slice:":3" %}
         <div class="col-lg-4 col-md-6 col-sm-12">
             <div class="card shadow-sm border-0 rounded-3 overflow-hidden position-relative h-100">
-                
+
                 {% if course.thumbnail %}
                 <a href="{% url 'courses:course_detail' course.id %}" class="d-block position-relative">
-                    <img src="{{ course.thumbnail.url }}" class="card-img-top img-fluid course-thumbnail" 
+                    <img src="{{ course.thumbnail.url }}" class="card-img-top img-fluid course-thumbnail"
                         alt="{{ course.title }}" style="height: 250px; object-fit: cover;">
                     <div class="overlay position-absolute top-0 start-0 w-100 h-100"></div>
                 </a>
                 {% endif %}
 
                 <div class="card-body text-center p-3 d-flex flex-column">
-                    
+
                     <h5 class="fw-semibold my-1">
                         <li class="list-group-item">
                             <strong><i class="bi bi-person-circle me-2"></i>Tutor:</strong>
@@ -78,13 +78,13 @@
                     </h6>
 
                     <p class="text-muted small"><strong>Level:</strong> {{ course.get_course_level_display }}</p>
-                    
+
                     <p class="text-muted small">{{ course.description|truncatewords:10 }}</p>
 
                     <!-- Enroll Button -->
                     <div class="mt-auto">
                         <a href="{% url 'courses:course_detail' course.id %}" class="btn btn-primary btn-sm rounded-pill px-3">
-                            ViewDetail 
+                            ViewDetail
                         </a>
                     </div>
                 </div>
@@ -121,7 +121,7 @@
 
 
 {% endblock %}
-   
+
 
     <!-- Tutors Section -->
 {% block Tutor %}
@@ -136,13 +136,13 @@
         <div class="row justify-content-center g-3"> <!-- Centered Cards -->
             {% for tutor in tutors|slice:":3" %}
             <div class="col-lg-4 col-md-6 d-flex justify-content-center"> <!-- Adjusting card width -->
-                <div class="card tutor-card shadow-sm border-0 rounded-3 overflow-hidden position-relative" 
+                <div class="card tutor-card shadow-sm border-0 rounded-3 overflow-hidden position-relative"
                      style="width: 100%; max-width: 350px;">
-                    
+
                     <!-- Tutor Image -->
                     <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}" class="position-relative">
-                        <img src="{{ tutor.profile_picture.url }}" 
-                             alt="{{ tutor.name }}'s Profile Picture" 
+                        <img src="{{ tutor.profile_picture.url }}"
+                             alt="{{ tutor.name }}'s Profile Picture"
                              class="card-img-top tutor-img"
                              style="height: 180px; object-fit: cover;">
                         <div class="overlay"></div>
@@ -176,7 +176,7 @@
                             <i class="fas fa-user"></i> View Profile
                         </a>
                     </div>
-                    
+
                 </div>
             </div>
             {% endfor %}
@@ -203,7 +203,7 @@
         <h2 class="fw-bold">About Us</h2>
         <p class="text-muted fs-5">Providing high-quality online education with expert tutors worldwide.</p>
     </div>
-    
+
     <div class="row align-items-center">
         <div class="col-md-6">
             <div class="card border-0 shadow-sm p-4">
@@ -218,7 +218,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-6 mt-4 mt-md-0">
             <div class="card border-0 shadow-sm p-4">
                 <div class="d-flex align-items-center">
@@ -251,7 +251,7 @@
             <div class="card border-0 shadow-lg p-4 rounded-4 bg-white">
                 <form method="post" action="{% url 'contact:feedback' %}">
                     {% csrf_token %}
-                    
+
                     <div class="mb-3">
                         <label for="name" class="form-label fw-semibold">Your Name</label>
                         <input type="text" class="form-control shadow-sm rounded-3" id="name" name="username" required>
@@ -334,13 +334,13 @@
         <div class="col">
             <h4 class="text-center">Find Us on the Map</h4>
             <div class="ratio ratio-16x9">
-                <iframe 
-    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3319.3579780766273!2d72.9930613762458!3d33.5371220472037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfec118e1a25e5%3A0x71cc624e9125cf9c!2sBahria%20Town%20Phase%208%2C%20Rawalpindi%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1709371764305!5m2!1sen!2s" 
-    width="600" 
-    height="450" 
-    style="border:0;" 
-    allowfullscreen="" 
-    loading="lazy" 
+                <iframe
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3319.3579780766273!2d72.9930613762458!3d33.5371220472037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfec118e1a25e5%3A0x71cc624e9125cf9c!2sBahria%20Town%20Phase%208%2C%20Rawalpindi%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1709371764305!5m2!1sen!2s"
+    width="600"
+    height="450"
+    style="border:0;"
+    allowfullscreen=""
+    loading="lazy"
     referrerpolicy="no-referrer-when-downgrade">
 </iframe>
 

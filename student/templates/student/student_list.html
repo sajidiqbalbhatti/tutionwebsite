@@ -8,28 +8,28 @@
         <div class="col-12 col-sm-10 col-md-8 col-lg-6">
             <form method="GET" action="{% url 'student:student_search' %}">
                 <div class="input-group shadow-sm rounded-pill position-relative">
-                    <input 
-                        type="text" 
-                        name="query" 
-                        class="form-control rounded-pill ps-4 pe-5" 
-                        placeholder="Search for students..." 
+                    <input
+                        type="text"
+                        name="query"
+                        class="form-control rounded-pill ps-4 pe-5"
+                        placeholder="Search for students..."
                         value="{{ query }}"
                     >
 
                     <!-- Buttons (Clear + Search) -->
-                    <div class="position-absolute end-0 top-50 translate-middle-y d-flex align-items-center me-2 flex-wrap gap-1">
+                    <div class="position-absolute end-0 top-50 translate-middle-y d-flex align-items-center  flex-wrap gap-1">
                         {% if query %}
-                            <button 
-                                type="button" 
-                                class="btn btn-link text-danger p-0 me-2" 
-                                onclick="clearSearch()" 
+                            <button
+                                type="button"
+                                class="btn btn-link text-danger p-0 me-2"
+                                onclick="clearSearch()"
                                 title="Clear"
                             >
                                 <i class="fas fa-times"></i>
                             </button>
                         {% endif %}
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             class="btn btn-primary rounded-pill px-3 py-1"
                             title="Search"
                         >
@@ -53,8 +53,8 @@
 
                     <!-- 🖼 Profile Picture -->
                     <a href="{% url 'student:student_detail' pk=student.pk %}">
-                        <img 
-                            src="{{ student.profile_picture.url }}" 
+                        <img
+                            src="{{ student.profile_picture.url }}"
                             alt="{{ student.user.username }}'s Profile Picture"
                             class="rounded-circle border shadow mb-3"
                             style="width: 70px; height: 70px; object-fit: cover;"
@@ -63,14 +63,14 @@
 
                     <!-- 🧑 Name -->
                     <h5 class="mb-1 text-primary fw-semibold">
-                        <span class="text-dark">Student:</span>
-                        <a 
-                            href="{% url 'student:student_detail' pk=student.pk %}" 
-                            class="text-decoration-none text-dark"
-                        >
-                            {{ student.name }}
+                        <span class="text-dark">
+                        <i class="fas fa-user-graduate"></i>
+                        </span>
+                        <a href="{% url 'student:student_detail' pk=student.pk %}" class="text-decoration-none text-dark">
+                        {{ student.name }}
                         </a>
                     </h5>
+
 
                     <!-- 🎓 Class Level -->
                     <p class="text-secondary small mb-2">
@@ -81,9 +81,11 @@
                     <div class="mb-3">
                         {% if student.enrolled_courses.all %}
                             {% for course in student.enrolled_courses.all %}
-                                <span class="badge bg-light text-dark border small mb-1">
-                                    {{ course.title }}
-                                </span>
+                                <a href="{% url 'courses:course_detail' course.id %}" class="badge bg-light text-dark border small mb-1 text-decoration-none">
+                                <i class="fas fa-book me-1 text-primary"></i> {{ course.title|truncatechars:15 }}
+                                </a>
+
+
                             {% endfor %}
                         {% else %}
                             <span class="text-muted small">No enrolled courses</span>
@@ -91,8 +93,8 @@
                     </div>
 
                     <!-- 🔗 View Profile -->
-                    <a 
-                        href="{% url 'student:student_detail' pk=student.pk %}" 
+                    <a
+                        href="{% url 'student:student_detail' pk=student.pk %}"
                         class="btn btn-outline-primary btn-sm"
                     >
                         View Profile
@@ -133,4 +135,3 @@
         }
     }
     </style>
-    

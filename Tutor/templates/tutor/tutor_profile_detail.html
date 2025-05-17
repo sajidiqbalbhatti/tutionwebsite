@@ -6,12 +6,12 @@
     <div class="col-lg-6 col-md-8 col-sm-10">
       <div class="card shadow-lg border-0 rounded-4">
         <div class="card-body text-center p-4">
-          
+
           <!-- Profile Picture Section -->
           <div class="d-flex justify-content-center">
             {% if tutor.profile_picture %}
-              <img src="{{ tutor.profile_picture.url }}" alt="Profile Picture" 
-                   class="img-thumbnail rounded-circle shadow-lg" 
+              <img src="{{ tutor.profile_picture.url }}" alt="Profile Picture"
+                   class="img-thumbnail rounded-circle shadow-lg"
                    style="width: 180px; height: 180px; object-fit: cover;">
             {% else %}
               <div class="bg-secondary text-white d-flex justify-content-center align-items-center rounded-circle shadow-lg"
@@ -26,10 +26,13 @@
 
           <!-- Tutor Information Table -->
           <div class="table-responsive">
-            <table class="table table-borderless text-start mt-3">
+            <table class="table table-borderless text-start mt-3  table-striped table-responsive">
               <tbody>
                 <tr><th class="text-primary">Name:</th><td>{{ tutor.name }}</td></tr>
-                <tr><th class="text-primary">Bio:</th><td>{{ tutor.bio|truncatewords_html:30 }}</td></tr>
+                <tr>
+                     <th class="text-primary">Bio:</th>
+                      <td class="bio-content">{{ tutor.bio }}</td>
+                </tr>
                 <tr><th class="text-primary">Education:</th><td>{{ tutor.education }}</td></tr>
                 <tr><th class="text-primary">Certifications:</th><td>{{ tutor.certifications }}</td></tr>
                 <tr><th class="text-primary">ID CARD:</th><td>{{ tutor.id_card_number }}</td></tr>
@@ -49,7 +52,7 @@
                 <tr><th class="text-primary">Languages:</th><td>{{ tutor.languages_spoken }}</td></tr>
                 <tr><th class="text-primary">Hourly Rate:</th><td>${{ tutor.hourly_rate }}</td></tr>
                 <tr><th class="text-primary">Available:</th><td>{{ tutor.available_from|date:"h:i A" }} - {{ tutor.available_until|date:"h:i A" }}</td></tr>
-                
+
                 <tr><th class="text-primary">Rating:</th><td>⭐ {{ tutor.rating }} / 5.0</td></tr>
               </tbody>
             </table>
@@ -59,16 +62,20 @@
 
           <!-- Courses Section -->
           <h4 class="text-primary fw-bold">Courses Taught:</h4>
-          <ul class="list-group list-group-flush">
+         <ul class="list-group list-group-flush">
             {% for course in tutor.courses.all %}
               <li class="list-group-item d-flex align-items-center">
-                <i class="fas fa-book text-primary me-2"></i>{{ course.title }}
+                <i class="fas fa-book text-primary me-2"></i>
+                <a href="{% url 'courses:course_detail' course.id %}" class="text-decoration-none text-dark">
+                  {{ course.title }}
+                </a>
               </li>
             {% empty %}
-              <li class="list-group-item text-muted">No courses taught.</li>
-            {% endfor %}
-          </ul>
-          
+           <li class="list-group-item text-muted">No courses taught.</li>
+           {% endfor %}
+         </ul>
+
+
 
           <!-- Edit Profile & Back Button Section -->
           {% if request.user == tutor.user %}
@@ -83,8 +90,8 @@
                 <a href="javascript:history.back()" class="btn btn-secondary px-4 py-2">Cancel</a>
             </div>
               {% else %}
-              
-              
+
+
               <!-- Back Button -->
                 <div class="text-center mt-5">
                    <a href="javascript:history.back()" class="btn btn-secondary">← Back</a>
@@ -104,8 +111,34 @@
     .table th { width: 40%; }
   }
   @media (max-width: 576px) {
-    .table th { width: 50%; font-size: 14px; }
+    .table th { width: 25%; font-size: 14px; }
     .table td, .btn { font-size: 14px; }
   }
+  /* Custom styles for better mobile/tablet responsiveness */
+.bio-content {
+    word-wrap: break-word; /* Ensure long words wrap nicely on smaller screens */
+    white-space: normal; /* Allow text to wrap within the cell */
+    font-size: 1rem; /* Adjust font size */
+}
+
+/* Mobile View Adjustments */
+@media (max-width: 767px) {
+    .bio-content {
+        font-size: 0.9rem; /* Slightly smaller font for mobile */
+        padding: 5px; /* Add some padding for better readability */
+    }
+
+    th {
+        font-size: 1.1rem; /* Ensure headers remain readable on small screens */
+    }
+}
+
+/* Tablet View Adjustments */
+@media (max-width: 991px) {
+    .bio-content {
+        font-size: 1rem; /* Slightly bigger font for tablet view */
+    }
+}
+
 </style>
 {% endblock %}

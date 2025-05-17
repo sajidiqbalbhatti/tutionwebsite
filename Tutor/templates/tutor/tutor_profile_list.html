@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container my-5 ">
     <!-- Search Bar at the top -->
-    <div class="row justify-content-center mb-4 my-5">
+    <div class="row justify-content-center mb-4 mt-3 mt-md-2">
         <div class="col-md-6">
             <form method="GET" action="{% url 'Tutor:product_search' %}" class="position-relative">
                 <div class="input-group shadow-sm rounded-pill">
@@ -27,46 +27,81 @@
     <h2 class="text-center mb-4">Meet Our Tutors</h2>
 
     <!-- Tutor Cards -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        {% for tutor in tutors %}
-            <div class="col">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}">
-                            <img src="{{ tutor.profile_picture.url }}" alt="Profile Picture" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
-                        </a>
-                        <h5 class="card-title mb-1">
-                            <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}" class="text-decoration-none text-dark">{{ tutor.name }}</a>
-                        </h5>
-                        <p class="text-muted">{{ tutor.education }}</p>
-                        <ul class="list-unstyled">
-                            {% for subject in tutor.subjects.all %}
-                              <li class="badge bg-info text-dark p-2">{{ subject.name }}</li>
-                            {% empty %}
-                              <li class="text-muted">No subjects listed.</li>
-                            {% endfor %}
-                        </ul>
-                        <p class="small text-secondary">
-                            {% for course in tutor.courses.all %}
-                              {{ course.title }}{% if not forloop.last %}, {% endif %}
-                            {% empty %}
-                              No courses assigned.
-                            {% endfor %}
-                        </p>
-                          
-                       
-                        
-                      
-                    
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  {% for tutor in tutors %}
+    <div class="col">
+      <div class="card h-100 shadow-sm border-0 rounded-4">
+        <div class="card-body d-flex flex-column align-items-center text-center p-4">
 
+          <!-- Profile Picture -->
+          <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}">
+            <img src="{{ tutor.profile_picture.url }}" alt="Profile Picture"
+                 class="rounded-circle border border-3 border-primary mb-3"
+                 style="width: 100px; height: 100px; object-fit: cover;">
+          </a>
 
-                        
-                        <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}" class="btn btn-outline-primary btn-sm">View Profile</a>
-                    </div>
-                </div>
+          <!-- Name -->
+          <h5 class="fw-bold mb-2">
+            <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}" class="text-decoration-none text-dark">
+              {{ tutor.name }}
+            </a>
+          </h5>
+
+          <!-- Tutor Info Section -->
+          <div class="w-100 mt-2">
+
+            <!-- Education -->
+            <div class="d-flex mb-2 text-muted text-start">
+              <strong style="width: 100px;">Education:</strong>
+              <span class="text-truncate">{{ tutor.education|truncatechars:40 }}</span>
             </div>
-        {% endfor %}
+
+            <!-- Subjects -->
+            <div class="d-flex mb-2 text-muted text-start">
+              <strong style="width: 100px;">Subject:</strong>
+              <div class="d-flex flex-wrap gap-1">
+                {% for subject in tutor.subjects.all %}
+                  <span class="badge bg-info text-dark">{{ subject.name }}</span>
+                {% empty %}
+                  <span class="text-muted">No subjects listed.</span>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Bio -->
+            <div class="d-flex mb-2 text-muted text-start">
+              <strong style="width: 100px;">Bio:</strong>
+              <span class="text-truncate">{{ tutor.bio|truncatechars:50 }}</span>
+            </div>
+
+            <!-- Courses -->
+            <div class="d-flex mb-2 text-secondary text-start small">
+              <strong style="width: 100px;">Course:</strong>
+              <span class="text-truncate">
+              {% for course in tutor.courses.all %}
+                <a href="{% url 'courses:course_detail' course.id %}" class="text-decoration-none text-primary">
+                    {{ course.title|truncatechars:20 }}
+                </a>{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                  No courses assigned.
+              {% endfor %}
+              </span>
+
+            </div>
+
+          </div>
+
+          <!-- Button -->
+          <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}" class="btn btn-outline-primary btn-sm rounded-pill mt-auto px-4">
+            View Profile
+          </a>
+        </div>
+      </div>
     </div>
+  {% endfor %}
+</div>
+
+
 
     <!-- Back Button -->
     <div class="text-center mt-5">

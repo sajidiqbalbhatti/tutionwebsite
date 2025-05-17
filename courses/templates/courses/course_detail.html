@@ -5,9 +5,9 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-                
+
                 {% if course.thumbnail %}
-                <div class="position-relative">
+                <div class="position-relative mt-2">
                     <img src="{{ course.thumbnail.url }}" class="card-img-top img-fluid w-100" style="max-height: 450px; object-fit: cover; border-bottom: 4px solid #ffc107;" alt="{{ course.title }}">
                     <div class="position-absolute top-0 start-0 bg-primary text-white px-4 py-2 rounded-bottom-end fw-bold shadow">
                         {{ course.category.name }}
@@ -36,7 +36,7 @@
                                             <p class="text-danger small fw-semibold">No Tutor Assigned</p>
                                         {% endif %}
                                     </li>
-                                    
+
                                     <li class="list-group-item"><strong><i class="bi bi-book me-2"></i>Subject:</strong> {{ course.title }}</li>
                                     <li class="list-group-item"><strong><i class="bi bi-layers me-2"></i>Level:</strong> {{ course.get_course_level_display }}</li>
                                     <li class="list-group-item"><strong><i class="bi bi-clock-history me-2"></i>Duration:</strong> {{ course.duration }} hours</li>

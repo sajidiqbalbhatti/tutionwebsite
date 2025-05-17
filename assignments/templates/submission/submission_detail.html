@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 ">
     <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10 col-sm-12">
+        <div class="col-lg-8 col-md-10 col-sm-12 mt-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white text-center">
                     <h4 class="mb-0">Submission Details</h4>
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Student:</strong> {{ submission.student.user.username }}</li>
+                        <li class="list-group-item"><strong>Student:</strong> {{ submission.student.name }}</li>
                         <li class="list-group-item"><strong>Assignment:</strong> {{ submission.assignment.title }}</li>
                         <li class="list-group-item"><strong>Submitted On:</strong> {{ submission.submitted_at }}</li>
                         <li class="list-group-item"><strong>Obtained Marks:</strong> {{ submission.marks_obtained|default:"wating" }} / {{ submission.assignment.max_marks }}</li>

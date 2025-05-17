@@ -24,79 +24,85 @@
             </form>
         </div>
     </div>
-    
+
     <script>
         function clearSearch() {
             document.querySelector('[name=query]').value = '';
         }
     </script>
-    
-    
+
+
     <!-- FontAwesome for icons -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    
+
 
     <h2 class="text-center mb-4">ALL Students</h2>
 
     {% if query %}
         {% if students %}
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for student in students %}
-            <div class="col">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center">
-    
-                        <!-- Profile Picture -->
-                        <a href="{% url 'student:student_detail' pk=student.pk %}">
-                            <img src="{{ student.profile_picture.url }}" 
-                                 alt="{{ student.user.username }}'s Profile Picture" 
-                                 class="rounded-circle shadow border border-gray"
-                                 style="width: 60px; height: 60px; object-fit: cover;">
-                        </a>
-    
-                        <!-- Username -->
-                        <h5 class="card-title mt-2 mb-1">
-                            <strong style="color: #007bff; font-weight: 600;">Student:</strong>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for student in students %}
+        <div class="col d-flex">
+            <div class="card h-100 w-100 border-0 shadow-sm">
+                <div class="card-body text-center">
 
-                            <a href="{% url 'student:student_detail' pk=student.pk %}" 
-                               class="text-decoration-none text-dark">
-                                {{ student.name}}
-                            </a>
-                        </h5>
-    
-                        <!-- Class Level -->
-                        
-                        <p class="small text-secondary mb-2">
-                            <strong> class:</strong>
-                            {{ student.level }}
-                        </p>
-    
-                        <!-- Enrolled Courses -->
-                        <p class="mb-2">
-                            {% if student.enrolled_courses.all %}
-                                {% for course in student.enrolled_courses.all %}
-                                    <span class="badge bg-light text-dark border">{{ course.title }}</span>{% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                <span class="text-muted">No enrolled courses</span>
-                            {% endif %}
-                        </p>
-    
-                        <!-- View Profile Button -->
-                        <a href="{% url 'student:student_detail' pk=student.pk %}" 
-                           class="btn btn-outline-primary btn-sm">
-                            View Profile
+                    <!-- 🖼 Profile Picture -->
+                    <a href="{% url 'student:student_detail' pk=student.pk %}">
+                        <img
+                            src="{{ student.profile_picture.url }}"
+                            alt="{{ student.user.username }}'s Profile Picture"
+                            class="rounded-circle border shadow mb-3"
+                            style="width: 70px; height: 70px; object-fit: cover;"
+                        >
+                    </a>
+
+                    <!-- 🧑 Name -->
+                    <h5 class="mb-1 text-primary fw-semibold">
+                        <span class="text-dark">
+                        <i class="fas fa-user-graduate"></i>
+                        </span>
+                        <a href="{% url 'student:student_detail' pk=student.pk %}" class="text-decoration-none text-dark">
+                        {{ student.name }}
                         </a>
-    
+                    </h5>
+
+
+                    <!-- 🎓 Class Level -->
+                    <p class="text-secondary small mb-2">
+                        <strong>Class:</strong> {{ student.level }}
+                    </p>
+
+                    <!-- 📚 Courses -->
+                    <div class="mb-3">
+                        {% if student.enrolled_courses.all %}
+                            {% for course in student.enrolled_courses.all %}
+                                <a href="{% url 'courses:course_detail' course.id %}" class="badge bg-light text-dark border small mb-1 text-decoration-none">
+                                <i class="fas fa-book me-1 text-primary"></i> {{ course.title|truncatechars:15 }}
+                                </a>
+
+
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted small">No enrolled courses</span>
+                        {% endif %}
                     </div>
+
+                    <!-- 🔗 View Profile -->
+                    <a
+                        href="{% url 'student:student_detail' pk=student.pk %}"
+                        class="btn btn-outline-primary btn-sm"
+                    >
+                        View Profile
+                    </a>
                 </div>
             </div>
-            {% empty %}
-            <div class="col">
-                <p class="text-muted text-center">No students found.</p>
-            </div>
-            {% endfor %}
         </div>
+        {% empty %}
+        <div class="col">
+            <p class="text-muted text-center">No students found.</p>
+        </div>
+        {% endfor %}
+    </div>
         {% else %}
             <p class="text-center">No students found.</p>
         {% endif %}

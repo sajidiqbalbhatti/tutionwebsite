@@ -2,167 +2,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
 </head>
+
 <body>
-    <div class="d-flex" id="wrapper">
-       
-        
-        <!-- Page Content -->
-        <div id="page-content-wrapper" class="flex-grow-1">
-            <!-- Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2">
-                <div class="container">
-                    <!-- Brand Logo -->
-                    <a class="navbar-brand fw-bold text-primary" href="#">EduSite</a>
-            
-                    <!-- Mobile Menu Toggle Button -->
-                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                        <i class="fas fa-bars"></i>
-                    </button>
-            
-                    <!-- Navbar Items -->
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav mx-auto">
-                            <li class="nav-item">
-                                <a class="nav-link fw-semibold" href="{% url 'home_page' %}">
-                                    <i class="fas fa-home me-2"></i> Home
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link fw-semibold" href="{% url 'courses:course_list' %}">
-                                    <i class="fas fa-book me-2"></i> Courses
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link fw-semibold" href="{% url 'student:student_list' %}">
-                                    <i class="fas fa-user-graduate"></i> Students
+  <div class="d-flex flex-column min-vh-100" id="wrapper">
 
-                                </a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link fw-semibold dropdown-toggle" href="#" id="assignmentDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-tasks me-2"></i> Assignments
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="assignmentDropdown">
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'assignments:assignment_list' %}">
-                                                Tutor assignments
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'assignments:tutor_submissions' %}">
-                                                Submited assignments
-                                        </a>
-                                    </li>
-                                   
-                                </ul>
-                            </li>
-                            
-                            <li class="nav-item">
-                                <a class="nav-link fw-semibold" href="#">
-                                    <i class="fas fa-comments me-2"></i> Messages
-                                </a>
-                            </li>
-                        </ul>
-            
-                        <!-- User Profile / Login Button -->
-                        <div class="d-flex align-items-center">
-                            {% if user.is_authenticated %}
-                                <div class="dropdown">
-                                    <a class="btn btn-light dropdown-toggle d-flex align-items-center py-1 px-3 rounded-3 shadow-sm" 
-                                       href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        {% if user.tutorprofile %}
-                                            <img src="{{ user.tutorprofile.profile_picture.url }}" class="rounded-circle me-2"
-                                                 style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #007bff;">
-                                            <span class="fw-bold text-primary">{{ user.tutorprofile.name }}</span>
-                                        {% elif user.student %}
-                                            <img src="{{ user.student.profile_picture.url }}" class="rounded-circle me-2"
-                                                 style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #28a745;">
-                                            <span class="fw-bold text-primary">{{ user.student.name }}</span>
-                                        {% endif %}
-                                    </a>
-            
-                                    <ul class="dropdown-menu dropdown-menu-end shadow p-2 rounded-3">
-                                        {% comment %} <li>
-                                            <a class="dropdown-item py-2" href="{% url 'Tutor:tutor-profile-detail' pk=user.tutorprofile.pk %}">
-                                                <i class="fas fa-user-circle me-2"></i> Profile
-                                            </a>
-                                        </li>  {% endcomment %}
-                                        {% comment %} <li>
-                                            <a class="dropdown-item py-2" href="#">
-                                                <i class="fas fa-cog me-2"></i> Settings
-                                            </a>
-                                        </li> {% endcomment %}
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <form method="post" action="{% url 'users:logout' %}" class="d-inline">
-                                                {% csrf_token %}
-                                                <button type="submit" class="dropdown-item text-danger py-2">
-                                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
-                            {% else %}
-                                <a href="{% url 'users:login' %}" class="btn btn-primary fw-bold px-4 py-2 rounded-3 shadow-sm">
-                                    <i class="fas fa-sign-in-alt me-2"></i>Login
-                                </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </nav>
-            
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2">
+      <div class="container">
+        <a class="navbar-brand fw-bold text-primary" href="#">EduSite</a>
 
-            <div class="container mt-4">
-                {% block content %}{% endblock %}
-            </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item">
+              <a class="nav-link fw-semibold" href="{% url 'home_page' %}">
+                <i class="fas fa-home me-2"></i> Home
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-semibold" href="{% url 'courses:course_list' %}">
+                <i class="fas fa-book me-2"></i> Courses
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-semibold" href="{% url 'student:student_list' %}">
+                <i class="fas fa-user-graduate me-2"></i> Students
+              </a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link fw-semibold dropdown-toggle" href="#" id="assignmentDropdown" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-tasks me-2"></i> Assignments
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="assignmentDropdown">
+                <li><a class="dropdown-item" href="{% url 'assignments:assignment_list' %}">Tutor Assignments</a></li>
+                <li><a class="dropdown-item" href="{% url 'assignments:tutor_submissions' %}">Submitted Assignments</a></li>
+              </ul>
+            </li>
+
+            <!-- Notification Bell -->
+            <li class="nav-item dropdown">
+              <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
+                <span class="position-relative d-inline-block">
+                  <i class="fas fa-bell fa-lg"></i>
+                  {% if unread_notifications.count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger text-white"
+                          style="font-size: 0.6rem; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
+                      {{ unread_notifications.count }}
+                    </span>
+                  {% endif %}
+                </span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end shadow p-3" style="max-width: 320px; max-height: 400px; overflow-y: auto;">
+                <li class="dropdown-header fw-semibold text-primary">
+                  <i class="fas fa-bell me-1"></i> Notifications ({{ unread_notifications.count }})
+                </li>
+                <li><hr class="dropdown-divider m-0"></li>
+                {% for note in unread_notifications %}
+                  <li class="mb-2">
+                    <a class="dropdown-item d-flex flex-column p-2 rounded bg-light" href="{% url 'mark_notification_read' note.pk %}">
+                      <div>{{ note.message|safe|truncatechars:100 }}</div>
+                      <small class="text-muted mt-1">{{ note.created_at|timesince }} ago</small>
+                    </a>
+                  </li>
+                {% empty %}
+                  <li><span class="dropdown-item text-muted">No new notifications</span></li>
+                {% endfor %}
+              </ul>
+            </li>
+          </ul>
+
+          <!-- User Auth Section -->
+          <div class="d-flex align-items-center">
+            {% if user.is_authenticated %}
+              <div class="dropdown">
+                <a class="btn btn-light dropdown-toggle d-flex align-items-center py-1 px-3 shadow-sm" href="#" data-bs-toggle="dropdown">
+                  {% if user.tutorprofile %}
+                    <img src="{{ user.tutorprofile.profile_picture.url }}" class="rounded-circle me-2"
+                         style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #007bff;">
+                    <span class="fw-bold text-primary">{{ user.tutorprofile.name }}</span>
+                  {% elif user.student %}
+                    <img src="{{ user.student.profile_picture.url }}" class="rounded-circle me-2"
+                         style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #28a745;">
+                    <span class="fw-bold text-primary">{{ user.student.name }}</span>
+                  {% endif %}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow p-2 rounded-3 ">
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <form method="post" action="{% url 'users:logout' %}" class="m-0">
+                      {% csrf_token %}
+                      <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger py-2 px-3">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                      </button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
+            {% else %}
+              <a href="{% url 'users:login' %}" class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
+                <i class="fas fa-sign-in-alt me-2"></i> Login
+              </a>
+            {% endif %}
+          </div>
         </div>
-    </div>
-    <style>
-        #sidebar-wrapper {
-            transition: all 0.3s;
-            width: 250px;
-        }
-        
-        #wrapper.toggled #sidebar-wrapper {
-            margin-left: -250px;
-        }
-        
-        @media (max-width: 992px) {
-            #sidebar-wrapper {
-                margin-left: -250px;
-                position: absolute;
-                height: 100vh;
-                z-index: 1000;
-            }
-            #wrapper.toggled #sidebar-wrapper {
-                margin-left: 0;
-            }
-        }
-        
-        .navbar-nav .nav-item .nav-link {
-            transition: color 0.3s ease-in-out;
-        }
-        
-        .navbar-nav .nav-item .nav-link:hover {
-            color: #0d6efd !important;
-            font-weight: bold;
-        }
-    </style>
+      </div>
+    </nav>
 
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main Content -->
+    <main class="container mt-4">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <!-- Styles -->
+  <style>
+    #sidebar-wrapper {
+      width: 250px;
+      transition: all 0.3s;
+    }
+    #wrapper.toggled #sidebar-wrapper {
+      margin-left: -250px;
+    }
+    @media (max-width: 992px) {
+      #sidebar-wrapper {
+        margin-left: -250px;
+        position: absolute;
+        height: 100vh;
+        z-index: 1000;
+      }
+      #wrapper.toggled #sidebar-wrapper {
+        margin-left: 0;
+      }
+    }
+    .navbar-nav .nav-link {
+      transition: color 0.3s ease-in-out;
+    }
+    .navbar-nav .nav-link:hover {
+      color: #0d6efd !important;
+      font-weight: bold;
+    }
+  </style>
+
+  <!-- Bootstrap Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

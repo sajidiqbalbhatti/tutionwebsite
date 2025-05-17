@@ -73,7 +73,7 @@ class UserSignupView(CreateView):
         user = form.save(commit=False)
         user.set_password(form.cleaned_data['password'])
         user.save()
-        login(self.request, user)
+        # login(self.request, user)
         return redirect(self.success_url)
 
 # Role-Based Login View

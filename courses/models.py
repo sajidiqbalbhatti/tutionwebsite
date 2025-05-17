@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from PIL import Image
 import logging
-from Tutor.models import TutorProfile
+
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ class Subject(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        
+
         return f"{self.level} - {self.subject_name}"
 
     def save(self, *args, **kwargs):
@@ -103,16 +103,7 @@ class Course(models.Model):
 
     title = models.CharField(max_length=255)
     description = models.TextField()
-    
-    # tutor = models.ForeignKey(
-    #     "Tutor.TutorProfile",
-    #     on_delete=models.CASCADE,
-        
-    #     related_name='courses_taught',
-    #     null=True,
-    #     blank=True,
-    # )
-    
+
     students = models.ManyToManyField(
         "student.Student",
         # limit_choices_to={'role': 'student'},
@@ -132,8 +123,7 @@ class Course(models.Model):
         Subject, on_delete=models.SET_NULL, null=True, related_name='courses'
     )
 
-    # teacher = models.ForeignKey(TutorProfile, on_delete=models.CASCADE, null=True, blank=True, related_name='tutor_courses')
-    
+
     mode = models.ManyToManyField(LearningModeOption)
     course_level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default='beginner')
     duration = models.PositiveIntegerField(help_text='Duration in hours')
@@ -144,7 +134,7 @@ class Course(models.Model):
     thumbnail = models.ImageField(upload_to='courses/thumbnails/', blank=True, null=True)
     content = models.TextField(help_text='Course content or syllabus', blank=True)
     is_active = models.BooleanField(default=True)
-    is_featured = models.BooleanField(default=False) 
+    is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_courses')
@@ -161,7 +151,7 @@ class Course(models.Model):
     # ------------------------------
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # Save the instance first
-        
+
         if self.thumbnail:
             self.resize_image()  # Resize the image after saving
 

@@ -24,7 +24,8 @@ INSTALLED_APPS = [
     'assignments',
     'contact',
     'crispy_forms',
-    'crispy_bootstrap5',  # For Bootstrap 5 compatibility
+    'crispy_bootstrap5',
+    'Notification',
 ]
 
 # Crispy Forms settings
@@ -57,6 +58,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                'Notification.context_processors.user_notifications', 
                 'django.contrib.messages.context_processors.messages',
             ],
         },

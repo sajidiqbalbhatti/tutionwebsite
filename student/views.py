@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db import IntegrityError
-from django.views import View
 from django.views.generic import (
     TemplateView, CreateView, UpdateView, DetailView, ListView, DeleteView
 )
@@ -11,7 +10,6 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.core.paginator import Paginator
-
 from users.models import User
 from .models import Student
 from courses.models import *
@@ -26,8 +24,8 @@ class StudentListView(LoginRequiredMixin, ListView):
     model = Student
     template_name = 'student/student_list.html'
     context_object_name = 'students'
-    
-   
+
+
 
 @CACHE_DECORATOR
 class StudentDetailView(LoginRequiredMixin, DetailView):
@@ -51,7 +49,7 @@ class StudentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         if hasattr(self.request.user, 'student'):  # Check if student profile already exists
              messages.error(self.request, "A profile already exists for this user.")
              return redirect('student:student_list')  # Redirect to student list page
-    
+
         form.instance.user = self.request.user
         return super().form_valid(form)
 
@@ -88,15 +86,15 @@ class StudentView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        
+
         if user.is_authenticated and hasattr(user, 'student'):
-            student = user.student  
+            student = user.student
             context['courses_enrolled_count'] = student.enrolled_courses.count()
             context['enrolled_courses'] = student.enrolled_courses.all()
         else:
             context['courses_enrolled_count'] = 0
             context['enrolled_courses'] = []
-        
+
         return context
 
     def test_func(self):
@@ -120,8 +118,8 @@ class StudentProfileDeleteView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(request, "Your profile has been deleted successfully.")
         return super().delete(request, *args, **kwargs)
-    
-    
+
+
 
 
 
@@ -135,8 +133,8 @@ def search_student(request):
             Q(name__icontains=query) |
             Q(level__icontains=query) |
             Q(enrolled_courses__title__icontains=query)
-            
-           
+
+
         ).distinct()
 
     return render(request, 'student/student_search.html', {'students': students, 'query': query})
