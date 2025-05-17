@@ -5,30 +5,7 @@
     <div class="card shadow-lg p-4">
         <h2 class="text-center mb-4">Submit Assignment</h2>
 
-        {% comment %} {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-danger">{{ message }}</div>
-            {% endfor %}
-        {% endif %} {% endcomment %}
-
-        {% comment %} {% if form.errors %}
-            <div class="alert alert-danger">
-                <strong>Please correct the errors below:</strong>
-                <ul>
-                    {% for field in form %}
-                        {% if field.errors %}
-                            <li>{{ field.label }}: 
-                                {% for error in field.errors %}
-                                    <span>{{ error }}</span><br>
-                                {% endfor %}
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %} {% endcomment %}
-
-        <form method="post" enctype="multipart/form-data">
+       <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             
             {% for field in form %}
