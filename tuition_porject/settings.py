@@ -1,11 +1,24 @@
 import os
 from pathlib import Path
 import socket
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 # Base directory for the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Installed applications
+# Security settings
+SECRET_KEY = 'django-insecure-gsutf%$^_2g(*!2@6dj-@rn_z2_sj)e!5#@-4w#muq#u+2r#eq'
+DEBUG = True
+
+ALLOWED_HOSTS = [
+    'sajidiqbal.pythonanywhere.com',
+    'localhost',
+    '127.0.0.1',
+]
+
+# Installed apps
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -14,17 +27,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'crispy_forms',
+    'crispy_bootstrap5',
     'Home',
     'users',
     'courses',
     'Tutor',
     'student',
-    'payments',  # Course management apps
+    'payments',
     'live_classes',
     'assignments',
     'contact',
-    'crispy_forms',
-    'crispy_bootstrap5',
     'Notification',
 ]
 
@@ -32,10 +45,10 @@ INSTALLED_APPS = [
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
-# Middleware settings
+# Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # This line for serving static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -44,21 +57,21 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Root URL configuration
+# URL configuration
 ROOT_URLCONF = 'tuition_porject.urls'
 
-# Template settings
+# Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],  # Templates directory
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'Notification.context_processors.user_notifications', 
+                'Notification.context_processors.user_notifications',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -68,70 +81,36 @@ TEMPLATES = [
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
 
-# Security settings
-SECRET_KEY = 'django-insecure-gsutf%$^_2g(*!2@6dj-@rn_z2_sj)e!5#@-4w#muq#u+2r#eq'
-
-DEBUG = True
-
-ALLOWED_HOSTS = [
-    'sajidiqbal.pythonanywhere.com',  # Production domain
-    'localhost',  # Localhost for development
-    '127.0.0.1',  # Localhost IP
-]
-
-
-
-# Define the URL path for serving static files
-import os
-from pathlib import Path
-import socket
-
-# Base directory for the project
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Static URL
+# Static & Media configuration
 STATIC_URL = '/static/'
-
-# Define static and media file paths for local and production environments
+MEDIA_URL = '/media/'
+BASE_DIR = Path(__file__).resolve().parent.parent
 hostname = socket.gethostname()
-
 if 'pythonanywhere' in hostname:
-    # For PythonAnywhere (production)
-    STATIC_ROOT = '/home/sajidiqbal/tuition_project/static/'
-    MEDIA_ROOT = '/home/sajidiqbal/tuition_project/media/'
+    STATIC_ROOT = '/home/sajidiqbal/tutionwebsite/tuition_porject/static/'
+    MEDIA_ROOT = '/home/sajidiqbal/tutionwebsite/tuition_porject/media/'
 else:
-    # For local development
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Add this line to define STATIC_ROOT
 
-# For production (using WhiteNoise)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Collect static files to the STATIC_ROOT directory
-
-
-
-
-
-
-# Database configuration (SQLite)
+# Database (SQLite)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
         'OPTIONS': {
-            'timeout': 20,  # Retry the connection for 20 seconds
+            'timeout': 20,
         },
     }
 }
 
-# Authentication settings
+# Authentication redirects
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# Password validation settings
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -139,16 +118,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization settings
+
+# Localization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Asia/Karachi'  # Set this according to your local timezone
+TIME_ZONE = 'Asia/Karachi'
 USE_I18N = True
 USE_TZ = True
 
-# Default auto field setting
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Email settings (optional, uncomment if you need email configuration)
-# ADMIN_EMAIL = 'sajidiqbal.bk.8888@gmail.com'
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# DEFAULT_FROM_EMAIL = 'noreply@tuition.com'

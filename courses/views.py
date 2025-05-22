@@ -74,7 +74,7 @@ class CourseListView(ListView):
 # Course Detail View
 # ============================
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name="dispatch")
-class CourseDetailView(LoginRequiredMixin, DetailView):
+class CourseDetailView( DetailView):
     """Displays detailed information about a course."""
     model = Course
     template_name = "courses/course_detail.html"
