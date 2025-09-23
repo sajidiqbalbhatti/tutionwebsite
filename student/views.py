@@ -14,6 +14,7 @@ from users.models import User
 from .models import Student
 from courses.models import *
 from .forms import StudentForm
+from django.core.cache import cache
 
 CACHE_DECORATOR = method_decorator(
     cache_control(no_cache=True, must_revalidate=True, no_store=True), name='dispatch'
@@ -24,6 +25,22 @@ class StudentListView(LoginRequiredMixin, ListView):
     model = Student
     template_name = 'student/student_list.html'
     context_object_name = 'students'
+    
+    def get_queryset(self):
+        cache_key = "student_list"
+        students = cache.get(cache_key)
+        
+        if not students:
+            print("⚡ Cache MISS - Fetching from DB")  # debug
+            students = (
+                Student.objects.select_related("user")
+                .prefetch_related("enrolled_courses")
+                .all()
+            )
+            cache.set(cache_key,students,300)
+        else:
+             print("✅ Cache HIT - Using cached data")  # debug
+        return students
 
 
 
@@ -32,6 +49,21 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
     model = Student
     template_name = 'student/student_detail.html'
     context_object_name = 'student'
+    def get_object(self):
+        cache_key = f"student_detail_{self.kwargs['pk']}"
+        student = cache.get(cache_key)
+        if not student:
+            print("⚡ Cache MISS - Fetching from DB")  # debug
+            student = (
+                Student.objects
+                .select_related("user")
+                .prefetch_related("enrolled_courses")
+                .get(pk=self.kwargs['pk'])
+            )
+            cache.set(cache_key, student, 10)
+        else:
+            print("✅ Cache HIT - Using cached data")  # debug
+        return student
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -78,6 +110,12 @@ class StudentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return redirect('users:login')
         messages.error(self.request, "You don't have permission to access this page.")
         return redirect('users:login')
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        cache_key = f"student_detail_{self.object.pk}"
+        cache.delete(cache_key)  # ✅ Cache clear
+        print(f"🗑️ Cache deleted after update: {cache_key}")
+        return response
 
 @CACHE_DECORATOR
 class StudentView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -116,26 +154,37 @@ class StudentProfileDeleteView(LoginRequiredMixin, DeleteView):
         return self.request.user.student
 
     def delete(self, request, *args, **kwargs):
+        # pehle parent class ka delete call karo
+        response = super().delete(request, *args, **kwargs)
+
+        # Cache clear karo
+        cache.clear()
+
+        # Success message
         messages.success(request, "Your profile has been deleted successfully.")
-        return super().delete(request, *args, **kwargs)
 
+        return response
 
-
-
+from django.db import connection
 
 def search_student(request):
-    """Handles course search functionality."""
-    query = request.GET.get('query', '').strip()  # Get the search query, remove extra spaces
-    students = Student.objects.none()  # Default to an empty queryset
+    query = request.GET.get('query', '').strip()
+    students = Student.objects.none()
 
     if query and len(query) >= 3:
         students = Student.objects.filter(
             Q(name__icontains=query) |
             Q(level__icontains=query) |
             Q(enrolled_courses__title__icontains=query)
+        ).select_related("user").prefetch_related("enrolled_courses").distinct()
 
-
-        ).distinct()
+    print("🔥 Queries Run:", len(connection.queries))  # Debug line
+    for q in connection.queries:
+        print(q["sql"])
 
     return render(request, 'student/student_search.html', {'students': students, 'query': query})
+
+
+
+
 

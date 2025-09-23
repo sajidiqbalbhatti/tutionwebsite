@@ -92,7 +92,7 @@
                                 </a>
                             {% endif %}
 
-                            {% if user.is_superuser or user == course.created_by %}
+                            {% if user == course.created_by %}
                                 <a href="{% url 'courses:course_update' course.id %}" class="btn btn-warning rounded-pill px-4 py-2 shadow-sm">
                                     <i class="bi bi-pencil-square"></i> Edit
                                 </a>

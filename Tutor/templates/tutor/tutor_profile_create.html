@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -6,50 +7,50 @@
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10 mt-5">
             <div class="card shadow-lg border-0">
+                
+                <!-- Header -->
                 <div class="card-header bg-black text-white text-center">
-                    <h2 class="mb-0 ">Create Tutor Profile</h2>
+                    <h2 class="mb-0">Create Tutor Profile</h2>
                 </div>
-                <div class="card-body">
 
-                    <!-- Profile creation form -->
+                <!-- Body -->
+                <div class="card-body">
                     <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                         {% csrf_token %}
-
                         <div class="row">
+
+                            <!-- Loop through form fields -->
                             {% for field in form %}
-                                {% if field.name == 'subjects' %}
+                                {% if field.name != 'new_subjects' and field.name != 'subjects' %}
                                     <div class="col-md-12 mb-3">
-                                        <label class="form-label fw-bold">{{ field.label }}</label>
-                                        <div class="row">
-                                            {% for subject in field.field.queryset %}
-                                                <div class="col-md-3 mb-3">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="subjects" value="{{ subject.id }}" id="subject_{{ subject.id }}">
-                                                        <label class="form-check-label fw-bold" for="subject_{{ subject.id }}">
-                                                            {{ subject.name }}
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                {% if forloop.counter|divisibleby:4 %}</div><div class="row">{% endif %}
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                {% else %}
-                                    <div class="col-md-12 mb-3">
-                                        {% comment %} <label class="form-label fw-bold">{{ field.label }}</label> {% endcomment %}
                                         {{ field|as_crispy_field }}
-                                        {% if field.errors %}
-                                            {% comment %} <div class="text-danger small mt-1">
-                                                {% for error in field.errors %}
-                                                    <i class="bi bi-exclamation-circle"></i> {{ error }}<br>
-                                                {% endfor %}
-                                            </div> {% endcomment %}
-                                        {% endif %}
                                     </div>
+
+                                    {# Show Subjects below Bio field #}
+                                    {% if field.name == 'bio' %}
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Subjects</label>
+                                            <div class="d-flex">
+                                                <!-- Input field on left -->
+                                                <input type="text" id="subjectInput" class="form-control" placeholder="Enter a subject" style="height: 50px; font-size: 1rem;">
+                                                <!-- Add button on right -->
+                                                <button type="button" class="btn btn-success ms-0 flex-shrink-0" 
+                                                        style="width: 80px; height: 50px; font-size: 1rem;" 
+                                                        onclick="addSubject()">Add</button>
+                                            </div>
+
+                                            <!-- Badges list -->
+                                            <div id="subjectList" class="mt-3"></div>
+
+                                            <!-- Hidden inputs -->
+                                            <div id="hiddenSubjects"></div>
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
                             {% endfor %}
                         </div>
 
+                        <!-- Submit button -->
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-success px-4 py-2">
                                 <i class="bi bi-check-circle me-2"></i>Create Profile
@@ -58,6 +59,7 @@
                     </form>
                 </div>
 
+                <!-- Footer -->
                 <div class="card-footer text-center">
                     <a href="{% url 'Tutor:tutor-profile-list' %}" class="btn btn-link text-primary fw-bold">
                         <i class="bi bi-arrow-left me-1"></i>Back to Profile List
@@ -68,32 +70,72 @@
     </div>
 </div>
 
-<!-- Custom CSS for better styling -->
-<style>
-    input, select, textarea {
-        border-radius: 8px !important;
-        padding: 5px !important;
+<!-- JS for Subjects -->
+<script>
+let subjects = [];
+// ✅ Backend se subjects ko JS me load karo
+{% if saved_subjects %}
+    subjects = {{ saved_subjects|safe }};
+    updateBadgeList();
+    updateHiddenInputs();
+{% endif %}
+function addSubject() {
+    let input = document.getElementById("subjectInput");
+    let value = input.value.trim();
+
+    if (value) {
+        value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
     }
-    .btn-success {
-        font-size: 1.1rem;
-        border-radius: 8px;
-        transition: all 0.3s ease-in-out;
+
+    if (value && !subjects.includes(value)) {
+        subjects.push(value);
+
+        let badge = document.createElement("span");
+        badge.className = "badge bg-info text-dark me-2 mb-2";
+        badge.innerHTML = value +
+            ` <button type="button" class="btn-close btn-close-white btn-sm ms-1" 
+                onclick="removeSubject('${value}')"></button>`;
+
+        document.getElementById("subjectList").appendChild(badge);
+        updateHiddenInputs();
     }
-    .btn-success:hover {
-        background-color: #218838;
-    }
-    .text-danger {
-        font-size: 0.9rem;
-        font-weight: 500;
-    }
-    .form-check-label {
-        font-size: 1rem;
-        color: #333;
-    }
-    .form-check-input {
-        transform: scale(1.2);
-        margin-right: 2px;
-    }
-</style>
+
+    input.value = "";
+}
+
+function removeSubject(subject) {
+    subjects = subjects.filter(s => s !== subject);
+    updateBadgeList();
+    updateHiddenInputs();
+}
+
+function updateBadgeList() {
+    let listDiv = document.getElementById("subjectList");
+    listDiv.innerHTML = "";
+
+    subjects.forEach(s => {
+        let badge = document.createElement("span");
+        badge.className = "badge bg-info text-dark me-2 mb-2";
+        badge.innerHTML = s +
+            ` <button type="button" class="btn-close btn-close-white btn-sm ms-1" 
+                onclick="removeSubject('${s}')"></button>`;
+        listDiv.appendChild(badge);
+    });
+}
+
+function updateHiddenInputs() {
+    let hiddenDiv = document.getElementById("hiddenSubjects");
+    hiddenDiv.innerHTML = "";
+
+    subjects.forEach(s => {
+        let hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "new_subjects";
+        hiddenInput.value = s;
+        hiddenDiv.appendChild(hiddenInput);
+    });
+}
+</script>
+
 
 {% endblock %}

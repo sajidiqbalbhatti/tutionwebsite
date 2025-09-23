@@ -17,7 +17,7 @@ class User(AbstractUser):
     role = models.CharField(
         max_length=10,
         choices=ROLE_CHOICES,
-        default=ADMIN,
+        default=TUTOR,
     )
     
     user_permissions = models.ManyToManyField(
@@ -38,14 +38,12 @@ class User(AbstractUser):
     
 class UserManager(models.Manager):
     def create_user(self, username, password=None, **extra_fields):
-        """
-        Create and return a regular user with the given username and password.
-        """
+      
         if not username:
             raise ValueError('The username field must be set')
         
         # Set a default role for regular users if not provided
-        extra_fields.setdefault('role', User.ADMIN)
+        extra_fields.setdefault('role', User.TUTOR)
         
         # Create the user
         user = self.model(username=username, **extra_fields)

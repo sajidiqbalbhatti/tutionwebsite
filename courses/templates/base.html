@@ -23,114 +23,118 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <!-- Navbar -->
-       <!-- Navbar -->
-       <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-lg fixed-top py-2 ">
-        <div class="container">
-            <!-- Brand Logo -->
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'home_page' %}">
-                <img src="{% static 'imges/enducationlogo.jpg' %}" alt="Logo" class="img-fluid me-2 rounded-circle shadow" style="width: 100%; max-width: 50px; height: auto;">
-                <span class="fs-4">Acadexa</span>
+   <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top py-2 border-bottom">
+  <div class="container">
+
+    <!-- Brand Logo -->
+    <a class="navbar-brand fw-bold d-flex align-items-center text-primary" href="{% url 'home_page' %}">
+      <img src="{% static 'imges/enducationlogo.jpg' %}" 
+           alt="Logo" 
+           class="img-fluid me-2 rounded-circle" 
+           style="width: 35px; height: 35px;">
+      <span class="fs-5">Acadexa</span>
+    </a>
+
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar Links -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto ms-lg-auto align-items-lg-center text-start">
+
+        <!-- Home -->
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home_page' %}">
+            <i class="fas fa-home me-1"></i> Home
+          </a>
+        </li>
+
+        <!-- Courses -->
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/courses/' %}active{% endif %}" href="{% url 'courses:course_list' %}">
+            <i class="fas fa-book-open me-1"></i> Courses
+          </a>
+        </li>
+
+        <!-- More Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="dashboardDropdown" role="button" data-bs-toggle="dropdown">
+            <i class="fas fa-ellipsis-v me-2"></i> More
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+            <li class="dropdown-header small text-muted">Dashboards</li>
+            <li><a class="dropdown-item" href="{% url 'users:admin_dashboard' %}">Admin</a></li>
+            <li><a class="dropdown-item" href="{% url 'Tutor:tutor_dashboard' %}">Tutor</a></li>
+            <li><a class="dropdown-item" href="{% url 'student:student_dashboard' %}">Student</a></li>
+          </ul>
+        </li>
+
+        <!-- Conditional Links -->
+        {% if request.user.is_authenticated %}
+
+          <!-- Create Profile (role-based) -->
+          {% if request.user.role == "student" %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'student:student_create' %}">
+                <i class="fas fa-user-plus"></i>
+              </a>
+            </li>
+          {% elif request.user.role == "tutor" %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'Tutor:tutor-profile-create' %}">
+                <i class="fas fa-user-plus"></i>
+              </a>
+            </li>
+          {% endif %}
+
+          <!-- Profile Picture -->
+          <li class="nav-item ms-3">
+            {% if user.tutorprofile %}
+              <a href="{% url 'Tutor:tutor-profile-detail' pk=user.tutorprofile.pk %}">
+                <img src="{{ user.tutorprofile.profile_picture.url|default:'/static/images/default_profile.jpg' }}" 
+                     class="rounded-circle border" 
+                     style="width: 40px; height: 40px;">
+              </a>
+            {% elif user.student %}
+              <a href="{% url 'student:student_detail' pk=user.student.pk %}">
+                <img src="{{ user.student.profile_picture.url|default:'/static/images/default.jpg' }}" 
+                     class="rounded-circle border" 
+                     style="width: 40px; height: 40px;">
+              </a>
+            {% endif %}
+          </li>
+
+          <!-- Logout -->
+          <li class="nav-item ms-2">
+            <form method="POST" action="{% url 'users:logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-link text-danger text-decoration-none p-0">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+            </form>
+          </li>
+
+        {% else %}
+          <!-- Login / Signup -->
+          <li class="nav-item ms-2">
+            <a href="{% url 'users:login' %}" class="btn btn-outline-primary btn-sm px-3 mt-2">
+              <i class="fas fa-sign-in-alt "></i> Login
             </a>
+          </li>
+          <li class="nav-item ms-2">
+            <a href="{% url 'users:signup' %}" class="btn btn-primary btn-sm px-3 mt-2">
+              <i class="fas fa-user-plus "></i> Sign Up
+            </a>
+          </li>
+        {% endif %}
 
-
-            <!-- Mobile Toggle Button -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
-            </button>
-
-            <!-- Navbar Links -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %} my-2 me-2" href="{% url 'home_page' %}"><i class="fas fa-home me-2"></i>Home</a></li>
-                    <li class="nav-item"><a class="nav-link {% if request.path == '/courses/' %}active{% endif %} my-2 me-2" href="{% url 'courses:course_list' %}"><i class="fas fa-book-open me-2"></i>Courses</a></li>
-
-                    <!-- Dashboard Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle me-2 my-2" href="#" id="dashboardDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                             More
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 p-3" style="width: 220px;">
-
-                            <li class="dropdown-header text-muted small fw-bold">Dashboard Links</li>
-
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center py-2" href="{% url 'users:admin_dashboard' %}">
-                                    <span>Admin Dashboard</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center py-2" href="{% url 'Tutor:tutor_dashboard' %}">
-                                    <span>Tutor Dashboard</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center py-2" href="{% url 'student:student_dashboard' %}">
-                                    <span>Student Dashboard</span>
-                                </a>
-                            </li>
-
-                            <li><hr class="dropdown-divider"></li>
-
-
-                        </ul>
-
-                    </li>
-
-                    <!-- User Authentication -->
-                    <li class="nav-item">
-                        {% if request.user.is_authenticated %}
-                            {% if request.user.role == "student" %}
-                                <a class="nav-link my-2" href="{% url 'student:student_create' %}"><i class="fas fa-user-plus"></i></a>
-                            {% elif request.user.role == "tutor" %}
-                                <a class="nav-link my-2" href="{% url 'Tutor:tutor-profile-create' %}"><i class="fas fa-user-plus"></i></a>
-                            {% endif %}
-                        {% else %}
-                            <a class="nav-link {% if request.resolver_match.view_name == 'users:signup' %}active{% endif %} my-2" href="{% url 'users:signup' %}"><i class="fas fa-user-plus me-1"></i> Sign Up</a>
-                        {% endif %}
-                    </li>
-
-                    <!-- User Profile Section -->
-                    {% if user.is_authenticated %}
-                    <li class="nav-item d-flex align-items-center ms-3">
-                        {% if user.tutorprofile %}
-                        <a href="{% url 'Tutor:tutor-profile-detail' pk=user.tutorprofile.pk %}" class="text-decoration-none d-flex align-items-center">
-                            {% if user.tutorprofile.profile_picture %}
-                                <img src="{{ user.tutorprofile.profile_picture.url }}" class="rounded-circle border shadow" style="width: 45px; height: 45px;">
-                            {% else %}
-                                <img src="{% static 'images/default_profile.jpg' %}" class="rounded-circle border shadow" style="width: 45px; height: 45px;">
-                            {% endif %}
-                        </a>
-                    {% elif user.student %}
-                        <a href="{% url 'student:student_detail' pk=user.student.pk %}" class="text-decoration-none d-flex align-items-center">
-                            {% if user.student.profile_picture %}
-                                <img src="{{ user.student.profile_picture.url }}" class="rounded-circle border shadow" style="width: 45px; height: 45px;">
-                            {% else %}
-                                <img src="{% static 'images/default.jpg' %}" class="rounded-circle border shadow" style="width: 45px; height: 45px;">
-                            {% endif %}
-                        </a>
-                    {% endif %}
-
-
-                        <!-- Logout Button -->
-                        <form method="POST" action="{% url 'users:logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm shadow-sm ms-2">                                <i class="fa-solid fa-right-from-bracket"></i> Logout
-                        </button>
-                        </form>
-                    </li>
-                {% else %}
-                    <a href="{% url 'users:login' %}" class="btn btn-custom  fw-bold px-4 py-2 my-2 rounded-3 shadow-sm ms-2">
-                        <i class="fas fa-sign-in-alt me-3"></i>Login
-                    </a>
-                {% endif %}
-
-                </ul>
-            </div>
-        </div>
-    </nav>
+      </ul>
+    </div>
+  </div>
+</nav>
 
     <br><br>
 
@@ -175,66 +179,66 @@
     {% block feedback %}{% endblock %}
 
       <!-- Footer -->
-  <footer class="bg-primary text-light pt-5 pb-4">
-    <div class="container text-center text-md-start">
-        <div class="row">
-            <!-- Column 1: About -->
-            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
-                <h5 class="text-uppercase fw-bold">Company Name</h5>
-                <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #f8f9fa; height: 2px">
-                <p>
-                    At <strong>EduMentor Online Tuition</strong>, we provide high-quality educational services. Stay connected with us for the latest updates.
-                </p>
+<footer class="bg-light border-top mt-5">
+  <div class="container py-5">
+    <div class="row">
 
-            </div>
+      <!-- About -->
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold text-dark">Acadexa</h6>
+        <p class="small text-muted">
+          At <strong>Acadexa Online Tuition</strong>, we provide high-quality educational services.  
+          Stay connected with us for the latest updates.
+        </p>
+      </div>
 
-            <!-- Column 2: Links -->
-            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-                <h5 class="text-uppercase fw-bold">Useful Links</h5>
-                <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #f8f9fa; height: 2px">
-                <p><a href="" class="text-light text-decoration-none">Home</a></p>
-                <p><a href="#" class="text-light text-decoration-none">About Us</a></p>
-                <p><a href="#" class="text-light text-decoration-none">Services</a></p>
-                <p><a href="{% url 'contact:contact' %}" class="text-light text-decoration-none">Contact</a></p>
-            </div>
+      <!-- Useful Links -->
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold text-dark">Useful Links</h6>
+        <ul class="list-unstyled small">
+          <li><a href="{% url 'privacy_policy' %}" class="text-muted text-decoration-none">Privacy Policy</a></li>
+          <li><a href="{% url 'refund_policy' %}" class="text-muted text-decoration-none">Refund Policy</a></li>
+          <li><a href="{% url 'service_policy' %}" class="text-muted text-decoration-none">Service Policy</a></li>
+          <li><a href="{% url 'terms_conditions' %}" class="text-muted text-decoration-none">Terms & Conditions</a></li>
+        </ul>
+      </div>
 
-            <!-- Column 3: Contact -->
-            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
-                <h5 class="text-uppercase fw-bold">Contact</h5>
-                <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #f8f9fa; height: 2px">
-                <p><i class="fas fa-home me-2"></i> 123 Street, City, Country</p>
-                <p><i class="fas fa-envelope me-2"></i> info@example.com</p>
-                <p><i class="fas fa-phone me-2"></i> +123 456 7890</p>
-            </div>
+      <!-- Contact -->
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold text-dark">Contact</h6>
+        <ul class="list-unstyled small text-muted">
+          <li><i class="fas fa-home me-2"></i> Islamabad, Pakistan</li>
+          <li><i class="fas fa-envelope me-2"></i> sajidiqbal.bk.8888@gmail.com</li>
+          <li><i class="fas fa-phone me-2"></i> +92 302 5139538</li>
+        </ul>
+      </div>
 
-            <!-- Column 4: Newsletter -->
-            <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mb-4">
-                <h5 class="text-uppercase fw-bold">Newsletter</h5>
-                <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #f8f9fa; height: 2px">
-                <p>Subscribe to our newsletter to stay updated.</p>
-                <form>
-                    <div class="input-group">
-                        <input type="email" class="form-control" placeholder="Your Email">
-                        <button class="btn btn-primary" type="submit">Subscribe</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Social Media Links -->
-        <div class="text-center mt-4">
-            <a href="#" class="text-light me-4"><i class="fab fa-facebook fa-lg"></i></a>
-            <a href="#" class="text-light me-4"><i class="fab fa-twitter fa-lg"></i></a>
-            <a href="#" class="text-light me-4"><i class="fab fa-instagram fa-lg"></i></a>
-            <a href="#" class="text-light me-4"><i class="fab fa-linkedin fa-lg"></i></a>
-        </div>
+      <!-- Newsletter -->
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold text-dark">Newsletter</h6>
+        <form class="d-flex">
+          <input type="email" class="form-control form-control-sm me-2" placeholder="Your Email">
+          <button class="btn btn-primary btn-sm" type="submit">Subscribe</button>
+        </form>
+      </div>
     </div>
 
-    <!-- Copyright -->
-    <div class="text-center p-3 mt-3" style="background-color: rgba(0, 0, 0, 0.2);">
-        &copy; 2025 Company Name. All rights reserved.
+    <!-- Social Links -->
+    <div class="d-flex justify-content-center mt-4">
+      <a href="#" class="text-muted me-3"><i class="fab fa-facebook fa-lg"></i></a>
+      <a href="#" class="text-muted me-3"><i class="fab fa-twitter fa-lg"></i></a>
+      <a href="#" class="text-muted me-3"><i class="fab fa-instagram fa-lg"></i></a>
+      <a href="#" class="text-muted me-3"><i class="fab fa-linkedin fa-lg"></i></a>
     </div>
+  </div>
+
+  <!-- Copyright -->
+  <div class="bg-white border-top text-center py-3 small text-muted">
+    &copy; 2025 <strong>Acadexa</strong>. All rights reserved.
+  </div>
 </footer>
+
+
 
 
     <!-- Bootstrap & Scripts -->

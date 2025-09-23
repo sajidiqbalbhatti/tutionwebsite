@@ -1,14 +1,11 @@
 import os
 from pathlib import Path
 import socket
-from django.conf import settings
-from django.conf.urls.static import static
 
-
-# Base directory for the project
+# Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security settings
+# Security
 SECRET_KEY = 'django-insecure-gsutf%$^_2g(*!2@6dj-@rn_z2_sj)e!5#@-4w#muq#u+2r#eq'
 DEBUG = True
 
@@ -26,9 +23,24 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third-party
     'widget_tweaks',
     'crispy_forms',
     'crispy_bootstrap5',
+
+  # Allauth apps
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
+    # 👇 Providers
+    'allauth.socialaccount.providers.google',
+    # 'allauth.socialaccount.providers.facebook',
+
+    # Local apps
+    'pages',
     'Home',
     'users',
     'courses',
@@ -41,7 +53,7 @@ INSTALLED_APPS = [
     'Notification',
 ]
 
-# Crispy Forms settings
+# Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
@@ -53,11 +65,14 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+    # 👇 Add this new middleware (required by allauth >= 65)
+    'allauth.account.middleware.AccountMiddleware',    
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# URL configuration
+# Root URL
 ROOT_URLCONF = 'tuition_porject.urls'
 
 # Templates
@@ -69,7 +84,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+                'django.template.context_processors.request',  # Required by allauth
                 'django.contrib.auth.context_processors.auth',
                 'Notification.context_processors.user_notifications',
                 'django.contrib.messages.context_processors.messages',
@@ -78,13 +93,21 @@ TEMPLATES = [
     },
 ]
 
+# Site ID (required by allauth)
+SITE_ID = 1
+
+# Authentication Backends (for allauth + default)
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
 
-# Static & Media configuration
+# Static & Media
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-BASE_DIR = Path(__file__).resolve().parent.parent
 hostname = socket.gethostname()
 if 'pythonanywhere' in hostname:
     STATIC_ROOT = '/home/sajidiqbal/tutionwebsite/tuition_porject/static/'
@@ -94,7 +117,7 @@ else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Database (SQLite)
+# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -105,10 +128,16 @@ DATABASES = {
     }
 }
 
-# Authentication redirects
+# Login redirects
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+# Allauth account settings
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+SOCIALACCOUNT_AUTO_SIGNUP = True  # Google login ke baad signup form skip kare
+ACCOUNT_EMAIL_VERIFICATION = "none"  # Email verification skip, ya "optional" agar chaho
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -118,6 +147,13 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# Cache
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    }
+}
 
 # Localization
 LANGUAGE_CODE = 'en-us'
@@ -125,5 +161,5 @@ TIME_ZONE = 'Asia/Karachi'
 USE_I18N = True
 USE_TZ = True
 
-# Default primary key field type
+# Default PK field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

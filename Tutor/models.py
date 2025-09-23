@@ -1,20 +1,21 @@
 from django.db import models
 from django.conf import settings
 from PIL import Image
+from django.urls import reverse
 
 class Subject(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
-   
-
 class TutorProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE, 
         related_name='tutorprofile'
     )
+    def get_absolute_url(self):
+        return reverse('tutor-profile-detail', kwargs={'pk': self.pk})
     name = models.CharField(max_length=255)
     bio = models.TextField()
     

@@ -9,7 +9,7 @@ from django.views.decorators.cache import cache_control
 from django.db import IntegrityError
 
 from users.models import User
-from .models import TutorProfile
+from .models import TutorProfile,Subject
 from .forms import TutorProfileForm
 from student.models import Student
 
@@ -77,16 +77,34 @@ class TutorProfileCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
     model = TutorProfile
     form_class = TutorProfileForm
     template_name = 'tutor/tutor_profile_create.html'
-    success_url = reverse_lazy('home_page')
+
+    # ✅ Agar tutor ka profile already exist karta hai
+    def dispatch(self, request, *args, **kwargs):
+        if TutorProfile.objects.filter(user=request.user).exists():
+            messages.warning(request, "You already have a profile. You can update it instead.")
+            return redirect('home_page')
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
+        form.instance.user = self.request.user  # profile ko user ke saath link karo
+
         try:
             response = super().form_valid(form)
+
+            # ✅ Subjects hidden inputs se lo
+            new_subjects = self.request.POST.getlist("new_subjects")
+            if new_subjects:
+                for name in new_subjects:
+                    name = name.strip().capitalize()
+                    if name:
+                        subject, created = Subject.objects.get_or_create(name=name)
+                        form.instance.subjects.add(subject)
+
             messages.success(self.request, "Tutor profile created successfully!")
             return response
+
         except IntegrityError as e:
-            if 'Tutor_tutorprofile.phone_number' in str(e):
+            if 'phone_number' in str(e):
                 form.add_error('phone_number', "This phone number is already in use. Please use a different number.")
             else:
                 messages.error(self.request, "An error occurred while saving the profile.")
@@ -94,19 +112,20 @@ class TutorProfileCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
 
     def form_invalid(self, form):
         messages.error(self.request, "Please correct the errors and try again.")
-            # Optionally, log form errors for debugging
+        # Debugging ke liye console me errors print kar do
         for field, errors in form.errors.items():
             print(f"Field: {field}, Errors: {errors}")
         return self.render_to_response(self.get_context_data(form=form))
 
-    
-    
     def test_func(self):
         return self.request.user.role == User.TUTOR
 
     def handle_no_permission(self):
         messages.error(self.request, "You don't have permission to access this page.")
         return redirect('users:login' if not self.request.user.is_authenticated else 'home_page')
+
+    def get_success_url(self):
+        return reverse_lazy('home_page')
 
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name='dispatch')
 class TutorProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -117,9 +136,23 @@ class TutorProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView
     
     def form_valid(self, form):
         form.instance.user = self.request.user
-        messages.success(self.request, "successfully update ")
 
-        return super().form_valid(form)
+        response = super().form_valid(form)
+
+        # ✅ Purane subjects clear kar ke naye set karo
+        # form.instance.subjects.clear()
+
+        # ✅ Subjects hidden inputs se lo
+        new_subjects = self.request.POST.getlist("new_subjects")
+        if new_subjects:
+            for name in new_subjects:
+                name = name.strip().capitalize()
+                if name:
+                    subject, created = Subject.objects.get_or_create(name=name)
+                    form.instance.subjects.add(subject)
+
+        messages.success(self.request, "Tutor profile updated successfully!")
+        return response
 
     def form_invalid(self, form):
         messages.error(self.request, "Please correct the errors and try again.")
@@ -134,7 +167,7 @@ class TutorProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView
     def handle_no_permission(self):
         messages.error(self.request, "You don't have permission to access this page.")
         return redirect('users:login' if not self.request.user.is_authenticated else 'home_page')
-
+    
 class TutorProfileDetailView(DetailView):
     model = TutorProfile
     template_name = 'tutor/tutor_profile_detail.html'

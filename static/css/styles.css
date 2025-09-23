@@ -336,3 +336,40 @@ button:hover {
 .navbar-brand img:hover {
     transform: scale(1.2);
 }
+
+/* Subject Input Field Styling Add the subject input fields */
+#subjectInput {
+    text-transform: capitalize;   /* ✅ First letter har word ka capital */
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 10px 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+#subjectInput:focus {
+    border-color: #198754;  /* Bootstrap green */
+    box-shadow: 0 0 8px rgba(25, 135, 84, 0.3);
+}
+
+/* Add Button Styling */
+#subjectInput + .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+#subjectInput + .btn:hover {
+    background-color: #146c43;  /* Darker green on hover */
+}
+
+/* Badge Styling */
+#subjectList .badge {
+    background: linear-gradient(135deg, #198754, #20c997);
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin: 5px 5px 0 0;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}

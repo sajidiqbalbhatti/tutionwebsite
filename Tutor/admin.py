@@ -17,7 +17,7 @@ class TutorProfileAdmin(admin.ModelAdmin):
         'available_until',
     )
     search_fields = ('user__username', 'name', 'education', 'subjects__name')  # Use subjects__name for searching related field
-    list_filter = ('rating', 'education', 'subjects')
+    list_filter = ('rating', 'education')
     ordering = ('user',)
 
     def get_subjects(self, obj):

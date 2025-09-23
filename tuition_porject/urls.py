@@ -8,11 +8,15 @@ urlpatterns = [
     path('notifications/', include('Notification.urls')),
     path('users/', include('users.urls')),
     path('', include('Home.urls')),
+    path('payment/', include('payments.urls')),
+    path('pages/', include('pages.urls')),
     path('courses/', include('courses.urls')),
     path('student/', include('student.urls')),
     path('tutor/', include('Tutor.urls', namespace='tutor')),
     path('contact/', include('contact.urls')),
     path('assessments/', include('assignments.urls')),
+     # 👇 yeh line add karo (allauth URLs)
+    path('accounts/', include('allauth.urls')),
 ]
 
 # Always serve static files (Django development or via WhiteNoise in production)
