@@ -73,7 +73,7 @@ MIDDLEWARE = [
 ]
 
 # Root URL
-ROOT_URLCONF = 'tuition_porject.urls'
+ROOT_URLCONF = 'tuition_project.urls'
 
 # Templates
 TEMPLATES = [
