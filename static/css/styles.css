@@ -1,3 +1,4 @@
+/* ========== GLOBAL RESET & BASE STYLING ========== */
 html, body {
     height: 100%;
     margin: 0;
@@ -10,23 +11,33 @@ main {
     flex: 1;
 }
 
-footer {
-    background-color: #343a40;
-    color: white;
-    padding: 1rem;
-    text-align: center;
-    background-image: url('../assets/footer-bg.jpg');
-    background-size: cover;
-    background-position: center;
+h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
 }
 
-/* Navbar Customization */
+.row, .form-check {
+    margin-bottom: 15px;
+}
+
+/* ========== NAVBAR ========== */
+.navbar {
+    margin-bottom: 20px;
+}
+
 .navbar-brand img {
     border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand img:hover {
+    transform: scale(1.2);
 }
 
 .navbar-dark .nav-link {
     font-size: 1.1rem;
+    transition: color 0.3s ease;
 }
 
 .navbar-dark .nav-link.active {
@@ -34,7 +45,14 @@ footer {
     text-decoration: underline;
 }
 
-/* Footer Customization */
+/* ========== FOOTER ========== */
+footer {
+    background: url('../assets/footer-bg.jpg') center/cover no-repeat, #343a40;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
 footer h5 {
     font-size: 1.2rem;
     margin-bottom: 15px;
@@ -42,6 +60,8 @@ footer h5 {
 
 footer p, footer a {
     font-size: 0.9rem;
+    color: inherit;
+    transition: color 0.3s ease;
 }
 
 footer a:hover {
@@ -49,44 +69,7 @@ footer a:hover {
     color: #ffcc00;
 }
 
-/* Form & Layout Customization */
-.form-check {
-    margin-bottom: 10px;
-}
-
-.row {
-    margin-bottom: 15px;
-}
-
-/* Checkbox Grid Layout */
-.checkbox-select-multiple {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-}
-
-.checkbox-select-multiple label {
-    display: block;
-    width: 100%;
-}
-
-/* Login Card Styling */
-.login-card {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-}
-
-h1 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
-}
-
+/* ========== FORM & INPUTS ========== */
 .form-group {
     margin-bottom: 15px;
     text-align: left;
@@ -97,37 +80,54 @@ h1 {
     color: #555;
 }
 
-.form-group input {
+.form-group input, #subjectInput {
     width: 100%;
-    padding: 10px;
+    padding: 10px 12px;
     font-size: 16px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
     background-color: #f9f9f9;
+    transition: all 0.3s ease;
     margin-top: 5px;
+    text-transform: capitalize;
 }
 
-.form-group input:focus {
-    border-color: #4d90fe;
+.form-group input:focus, #subjectInput:focus {
+    border-color: #198754;
     background-color: #fff;
+    box-shadow: 0 0 8px rgba(25, 135, 84, 0.3);
     outline: none;
 }
 
-button {
+/* Buttons */
+button, .btn-hover, #subjectInput + .btn {
     width: 100%;
     padding: 12px;
     background-color: #4d90fe;
     color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-button:hover {
+button:hover, .btn-hover:hover, #subjectInput + .btn:hover {
     background-color: #357ae8;
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+    transform: translateY(-3px);
 }
 
+.btn-custom {
+    background-color: #0056b3;
+}
+
+.btn-custom:hover {
+    background-color: #004494;
+}
+
+/* Error Message */
 .error-message {
     color: red;
     font-size: 14px;
@@ -135,12 +135,7 @@ button:hover {
     text-align: left;
 }
 
-.navbar {
-    margin-bottom: 20px; /* Navbar ke neeche 20px ka gap */
-}
-
-
-/* Sidebar Customization */
+/* ========== SIDEBAR ========== */
 #sidebar-wrapper {
     transition: all 0.3s ease-in-out;
     width: 250px;
@@ -157,22 +152,15 @@ button:hover {
 }
 
 @media (max-width: 992px) {
-    #sidebar-wrapper {
-        left: -250px;
-    }
-    
-    #wrapper.toggled #sidebar-wrapper {
-        left: 0;
-    }
+    #sidebar-wrapper { left: -250px; }
+    #wrapper.toggled #sidebar-wrapper { left: 0; }
 }
 
-/* Swiper Slider Customization */
+/* ========== SWIPER SLIDER ========== */
 .swiper {
     margin-top: 2rem;
     width: 100%;
-    max-width: 100%;
     height: 70vh;
-    aspect-ratio: 1/1;
 }
 
 .swiper-slide {
@@ -182,7 +170,6 @@ button:hover {
     background: #f8f9fa;
     border-radius: 10px;
     overflow: hidden;
-    width: 100%;
     height: 65vh;
 }
 
@@ -193,34 +180,81 @@ button:hover {
 }
 
 @media (max-width: 576px) {
-    .swiper {
-        height: 40vh; /* Reduce height for mobile */
-    }
-    .swiper-slide {
-        height: 35vh; /* Reduce slide height for mobile */
-    }
-    .swiper-slide img {
-        height: 100%;
-        object-fit: cover;
-    }
+    .swiper { height: 40vh; }
+    .swiper-slide { height: 35vh; }
 }
 
-/* Tutor Card Styling */
-/* Tutor Card Styling */
-.tutor-card .tutor-img:hover {
-    transform: scale(1.08) !important;
-    filter: brightness(0.85) !important;
+/* ========== CARD STYLING ========== */
+.card {
+    transition: all 0.4s ease-in-out;
 }
 
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+}
 
+.card:hover h5 a {
+    color: #007bff !important;
+    transition: color 0.3s ease-in-out;
+}
 
-/* Course Thumbnail Styling */
+.card:hover .btn {
+    background-color: #0056b3 !important;
+    color: #fff !important;
+    border-color: #0056b3 !important;
+}
+
+/* ========== TUTOR CARD ========== */
+.tutor-card {
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tutor-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+/* Tutor Image */
+.tutor-img-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.tutor-img-wrapper img {
+    height: 220px;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.tutor-card:hover .tutor-img-wrapper img {
+    transform: scale(1.05);
+}
+
+/* Tutor Overlay */
+.tutor-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.tutor-card:hover .tutor-overlay {
+    opacity: 1;
+}
+
+/* ========== COURSE THUMBNAIL ========== */
 .course-thumbnail {
     object-fit: cover;
     height: 250px;
     width: 100%;
-    transition: transform 0.5s ease-in-out, filter 0.3s ease-in-out;
     border-radius: 12px;
+    transition: transform 0.5s ease, filter 0.3s ease;
     position: relative;
 }
 
@@ -229,14 +263,11 @@ button:hover {
     filter: brightness(0.75);
 }
 
-/* Image Overlay Effect */
+/* Overlay */
 .overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
+    inset: 0;
+    background: rgba(0,0,0,0.4);
     opacity: 0;
     transition: opacity 0.4s ease-in-out;
 }
@@ -245,125 +276,43 @@ button:hover {
     opacity: 1;
 }
 
-/* Button Hover Effects */
-.btn-hover {
-    transition: all 0.4s ease-in-out;
-    position: relative;
-    overflow: hidden;
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 8px;
-    padding: 10px 20px;
-    display: inline-block;
-    font-size: 16px;
-    text-align: center;
-}
-
-.btn-hover:hover {
-    background-color: #0056b3;
-    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
-    transform: translateY(-3px);
-}
-
-.btn-hover i {
-    transition: transform 0.4s ease-in-out;
-}
-
-.btn-hover:hover i {
-    transform: translateX(8px);
-}
-
-/* Advanced Mobile Responsiveness */
-@media (max-width: 480px) {
-    .tutor-card img {
-        height: 190px;
-    }
-    .course-thumbnail {
-        height: 210px;
-    }
-}
-/* Tutor Card Hover Effect */
-.card {
-    transition: all 0.4s ease-in-out;
-}
-
-.card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-}
-
-/* Image Effect on Hover */
-.card:hover img {
-    transform: scale(1.1);
-    filter: brightness(0.85);
-    transition: all 0.4s ease-in-out;
-}
-
-/* Change Text Color on Hover */
-.card:hover h5 a {
-    color: #007bff !important;
-    transition: color 0.3s ease-in-out;
-}
-
-/* Change Button Style on Hover */
-.card:hover .btn {
-    background-color: #0056b3 !important;
-    color: #fff !important;
-    border-color: #0056b3 !important;
-    transition: all 0.3s ease-in-out;
-}
-
-.btn-custom {
-    background-color: #0056b3;
-    color: white;
-}
-.btn-custom:hover {
-    background-color: #004494;
+/* ========== TEXTS ========== */
+.text-gradient {
+    background: linear-gradient(45deg, #007bff, #6610f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .bio-text {
     font-family: 'Poppins', sans-serif;
-    font-size: 14px; /* Professional smaller font size */
-    color: #6c757d; /* Bootstrap muted text color */
-    padding-left: 12px;
-    padding-right: 12px;
+    font-size: 14px;
+    color: #6c757d;
+    padding: 0 12px;
 }
 
-.navbar-brand img {
-    transition: transform 0.3s ease;
+.hover-primary:hover {
+    color: #007bff !important;
 }
 
-.navbar-brand img:hover {
-    transform: scale(1.2);
-}
-
-/* Subject Input Field Styling Add the subject input fields */
-#subjectInput {
-    text-transform: capitalize;   /* ✅ First letter har word ka capital */
+/* ========== BUTTONS ========== */
+.btn-gradient {
+    background: linear-gradient(45deg, #007bff, #6610f2);
+    color: #fff;
+    border: none;
     border-radius: 8px;
-    border: 1px solid #ced4da;
-    padding: 10px 12px;
-    font-size: 16px;
+    padding: 10px 20px;
     transition: all 0.3s ease;
 }
 
-#subjectInput:focus {
-    border-color: #198754;  /* Bootstrap green */
-    box-shadow: 0 0 8px rgba(25, 135, 84, 0.3);
+.btn-gradient:hover {
+    background: linear-gradient(45deg, #0056b3, #520dc2);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
 
-/* Add Button Styling */
-#subjectInput + .btn {
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-#subjectInput + .btn:hover {
-    background-color: #146c43;  /* Darker green on hover */
-}
-
-/* Badge Styling */
+/* ========== SUBJECT BADGES ========== */
+.bg-gradient-primary, 
 #subjectList .badge {
     background: linear-gradient(135deg, #198754, #20c997);
     font-size: 14px;
@@ -373,3 +322,63 @@ button:hover {
     color: #fff;
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
+
+/* ========== RESPONSIVENESS ========== */
+@media (max-width: 480px) {
+    .tutor-img-wrapper img { height: 190px; }
+    .course-thumbnail { height: 210px; }
+}
+
+/* Profile Image */
+.profile-img {
+  width: 85px;
+  height: 85px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  transition: all 0.3s ease;
+}
+.profile-img:hover {
+  transform: scale(1.07);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+  border-color: #2563eb;
+}
+
+/* Course Card */
+.course-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.course-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Thumbnail */
+.course-thumbnail {
+  height: 220px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.course-card:hover .course-thumbnail {
+  transform: scale(1.08);
+}
+
+/* Overlay */
+.overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.course-card:hover .overlay {
+  opacity: 1;
+}
+
+/* Link Hover */
+.hover-blue:hover {
+  color: #0d6efd !important;
+}
+
+

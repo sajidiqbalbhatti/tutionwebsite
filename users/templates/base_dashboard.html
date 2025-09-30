@@ -94,9 +94,9 @@
                 <a class="btn btn-light dropdown-toggle d-flex align-items-center py-1 px-3 shadow-sm" href="#" data-bs-toggle="dropdown">
                   {% if user.tutorprofile %}
                     <img src="{{ user.tutorprofile.profile_picture.url }}" class="rounded-circle me-2"
-                         style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #007bff;">
+                         style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #28a745;">
                     <span class="fw-bold text-primary">{{ user.tutorprofile.name }}</span>
-                  {% elif user.student %}
+                  {% elif user.student %}               
                     <img src="{{ user.student.profile_picture.url }}" class="rounded-circle me-2"
                          style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #28a745;">
                     <span class="fw-bold text-primary">{{ user.student.name }}</span>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acadexa</title>
-    <link rel="icon" href="{% static 'assets/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'imges/enducationlogo.jpg' %}" type="image/x-icon">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css">
@@ -95,8 +95,8 @@
             {% if user.tutorprofile %}
               <a href="{% url 'Tutor:tutor-profile-detail' pk=user.tutorprofile.pk %}">
                 <img src="{{ user.tutorprofile.profile_picture.url|default:'/static/images/default_profile.jpg' }}" 
-                     class="rounded-circle border" 
-                     style="width: 40px; height: 40px;">
+                     class="rounded-circle me-2" 
+                     style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #28a745;">
               </a>
             {% elif user.student %}
               <a href="{% url 'student:student_detail' pk=user.student.pk %}">

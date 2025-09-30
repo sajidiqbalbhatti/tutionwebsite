@@ -2,6 +2,8 @@ from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from .models import Student
+from django.core.cache import cache
+from django.db.models.signals import post_save, pre_delete, m2m_changed
 from courses.models import Course
 from Notification.models import Notification
 
@@ -39,3 +41,14 @@ def student_enrolled_notification(sender, instance, action, pk_set, **kwargs):
 
             except Course.DoesNotExist:
                 pass
+
+
+# -----------------------------
+# ⚡ CACHE CLEAR SIGNALS
+# -----------------------------
+
+
+@receiver([post_save, pre_delete], sender=Student)
+def clear_tutor_cache(sender, **kwargs):
+    cache.delete("student_list")
+    print("🗑️ Cache cleared for all_student")

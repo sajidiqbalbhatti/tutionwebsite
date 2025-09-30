@@ -1,17 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <!-- Search Bar at the top -->
-    <div class="row justify-content-center mb-4 my-5">
-        <div class="col-md-6">
+<div class="container my-5">
+
+    <!-- 🔍 Search Bar -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-6 col-md-8 col-12">
             <form method="GET" action="{% url 'Tutor:product_search' %}" class="position-relative">
                 <div class="input-group shadow-sm rounded-pill">
-                    <input type="text" name="query" class="form-control rounded-pill ps-4 pe-5"
-                        placeholder="Search for students..." value="{{ query }}">
+                    <input type="text"
+                           name="query"
+                           class="form-control rounded-pill ps-4 pe-5"
+                           placeholder="Search tutors by name, subject or course..."
+                           value="{{ query }}">
                     <div class="position-absolute end-0 d-flex align-items-center">
                         {% if query %}
-                        <button type="button" class="btn btn-link text-danger p-0 me-3" onclick="clearSearch()">
+                        <button type="button"
+                                class="btn btn-link text-danger p-0 me-3"
+                                onclick="clearSearch()"
+                                aria-label="Clear search">
                             <i class="fas fa-times"></i>
                         </button>
                         {% endif %}
@@ -23,58 +30,124 @@
             </form>
         </div>
     </div>
+
     <script>
         function clearSearch() {
             document.querySelector('[name=query]').value = '';
         }
     </script>
 
-    <h2 class="text-center mb-4">Tutors</h2>
+    <!-- Title -->
+    <h2 class="text-center fw-bold mb-4">Tutors</h2>
 
     {% if query %}
-        {% if tutors %}
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for tutor in tutors %}
-                <div class="col">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}">
-                                <img src="{{ tutor.profile_picture.url }}" alt="Profile Picture" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+        {% if page_obj %}
+        <!-- Tutors Grid -->
+        <div class="row g-4">
+            {% for tutor in page_obj %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card tutor-card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+
+                    <!-- Tutor Image -->
+                    <div class="position-relative">
+                        <img src="{{ tutor.profile_picture.url }}"
+                             alt="{{ tutor.name }}"
+                             class="card-img-top"
+                             style="height:200px; object-fit:cover;">
+
+                        <!-- Overlay -->
+                        <div class="tutor-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                            <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}"
+                               class="btn btn-sm btn-light rounded-pill px-3 shadow-sm">
+                                <i class="fas fa-user me-1"></i> View Profile
                             </a>
-                            <h5 class="card-title mb-1">
-                                <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}" class="text-decoration-none text-dark">{{ tutor.name }}</a>
-                            </h5>
-                            <p class="text-muted">{{ tutor.education }}</p>
-                            <ul class="list-unstyled">
-                                {% for subject in tutor.subjects.all %}
-                                  <li class="badge bg-info text-dark p-2">{{ subject.name }}</li>
-                                {% empty %}
-                                  <li class="text-muted">No subjects listed.</li>
-                                {% endfor %}
-                              </ul>
-                              <p class="small text-secondary">
-                                {% for course in tutor.courses.all %}
-                                  {{ course.title }}{% if not forloop.last %}, {% endif %}
-                                {% empty %}
-                                  No courses assigned.
-                                {% endfor %}
-                            </p>
-                            <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}" class="btn btn-outline-primary btn-sm">View Profile</a>
                         </div>
                     </div>
+
+                    <!-- Tutor Info -->
+                    <div class="card-body text-center p-3">
+                        <h6 class="fw-bold mb-1">
+                            <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}"
+                               class="text-decoration-none text-dark hover-primary">
+                               {{ tutor.name }}
+                            </a>
+                        </h6>
+
+                        <p class="text-muted small mb-2">{{ tutor.education|truncatechars:35 }}</p>
+
+                        <!-- Subjects -->
+                        <div class="d-flex justify-content-center flex-wrap gap-1 mb-2">
+                            {% for subject in tutor.subjects.all|slice:":2" %}
+                                <span class="badge bg-primary bg-gradient text-white px-2 py-1 rounded-pill">
+                                    {{ subject.name }}
+                                </span>
+                            {% empty %}
+                                <span class="text-muted small">No subjects</span>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Bio -->
+                        <p class="text-muted small mb-0">{{ tutor.bio|truncatewords:12 }}</p>
+                    </div>
                 </div>
+            </div>
             {% endfor %}
         </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Tutor pagination" class="mt-5">
+          <ul class="pagination pagination-sm justify-content-center">
+
+            <!-- Prev -->
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link rounded-pill" href="?query={{ query }}&page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link rounded-pill">&laquo;</span>
+              </li>
+            {% endif %}
+
+            <!-- Page Numbers -->
+            {% for num in page_obj.paginator.page_range %}
+              {% if num == page_obj.number %}
+                <li class="page-item active"><span class="page-link rounded-pill">{{ num }}</span></li>
+              {% elif num > page_obj.number|add:"-2" and num < page_obj.number|add:"2" %}
+                <li class="page-item"><a class="page-link rounded-pill" href="?query={{ query }}&page={{ num }}">{{ num }}</a></li>
+              {% endif %}
+            {% endfor %}
+
+            <!-- Next -->
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link rounded-pill" href="?query={{ query }}&page={{ page_obj.next_page_number }}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link rounded-pill">&raquo;</span>
+              </li>
+            {% endif %}
+
+          </ul>
+        </nav>
+        {% endif %}
+
         {% else %}
             <p class="text-center text-danger">No tutors found matching your search.</p>
         {% endif %}
     {% else %}
-        <p class="text-center">Please enter a search query.</p>
+        <p class="text-center text-muted">Please enter at least 3 characters to search for tutors.</p>
     {% endif %}
 
     <!-- Back Button -->
     <div class="text-center mt-5">
-        <a href="javascript:history.back()" class="btn btn-secondary">← Back</a>
+        <a href="javascript:history.back()" class="btn btn-outline-secondary rounded-pill px-4">← Back</a>
     </div>
 </div>
 {% endblock %}

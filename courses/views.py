@@ -58,6 +58,7 @@ class CourseListView(ListView):
     model = Course
     template_name = "courses/course_list.html"
     context_object_name = "courses"
+    paginate_by=8
     
     
     def get_queryset(self):
@@ -127,10 +128,6 @@ class CourseUpdateView(LoginRequiredMixin, UpdateView):
         form.instance.created_by = self.request.user
         response = super().form_valid(form)
 
-        # ✅ Cache clear kar do taake fresh data load ho next time
-        cache.delete("all_courses")
-        print("🗑️ Cache cleared after course update")
-
         return response
         
 
@@ -154,26 +151,23 @@ class CourseDeleteView(LoginRequiredMixin, DeleteView):
         return get_object_or_404(Course, pk=self.kwargs["pk"])
     
     
-    def delete(self, request, *args, **kwargs):
-        response = super().delete(request, *args, **kwargs)
-
-        # ✅ yaha cache clear karo
-        cache.delete("all_courses")
-        print("🗑️ Cache cleared after course delete")
-
-        return response
-
-
 # ============================
 # Search Functionality
 # ============================
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.shortcuts import render
+from .models import Course
+
+
 def SearchResultsView(request):
     query = request.GET.get('q', '').strip()
     courses = Course.objects.none()
 
     if query and len(query) >= 3:
         courses = (
-            Course.objects.prefetch_related("tutors", "mode")  # ✅ Fix N+1
+            Course.objects.select_related("created_by__tutorprofile")  # ✅ Fix N+1
+            .prefetch_related("tutors", "mode")  # ✅ Prefetch for efficiency
             .filter(
                 Q(title__icontains=query) |
                 Q(tutors__name__icontains=query) |
@@ -182,8 +176,20 @@ def SearchResultsView(request):
             .distinct()
         )
 
-    return render(request, 'courses/course_search.html', {'courses': courses, 'query': query})
+    # ✅ Pagination add kiya
+    paginator = Paginator(courses, 8)  # har page per 8 courses
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
+    return render(
+        request,
+        "courses/course_search.html",
+        {
+            "courses": page_obj,
+            "query": query,
+            "page_obj": page_obj,  # template mein use hoga
+        },
+    )
 
 # ============================
 # Course Enrollment View

@@ -1,38 +1,25 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="container my-5">
 
-    <!-- 🔍 Responsive Search Bar -->
-    <div class="row justify-content-center mb-4 my-5">
-        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
-            <form method="GET" action="{% url 'student:student_search' %}">
-                <div class="input-group shadow-sm rounded-pill position-relative">
-                    <input
-                        type="text"
-                        name="query"
-                        class="form-control rounded-pill ps-4 pe-5"
-                        placeholder="Search for students..."
-                        value="{{ query }}"
-                    >
+<section id="students" class="container py-5">
+    <!-- Page Title -->
+    <h2 class="fw-bold text-center mb-4 text-uppercase text-primary mt-2">Meet Our Students</h2>
 
-                    <!-- Buttons (Clear + Search) -->
-                    <div class="position-absolute end-0 top-50 translate-middle-y d-flex align-items-center  flex-wrap gap-1">
+    <!-- 🔍 Search Bar -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-6 my-2 mt-md-3">
+            <form method="GET" action="{% url 'student:student_search' %}" class="position-relative">
+                <div class="input-group shadow-sm rounded-pill">
+                    <input type="text" name="query" class="form-control rounded-pill ps-4 pe-5"
+                           placeholder="Search students..."  value="{{ query }}">
+                    <div class="position-absolute end-0 d-flex align-items-center">
                         {% if query %}
-                            <button
-                                type="button"
-                                class="btn btn-link text-danger p-0 me-2"
-                                onclick="clearSearch()"
-                                title="Clear"
-                            >
-                                <i class="fas fa-times"></i>
-                            </button>
+                        <button type="button" class="btn btn-link text-danger p-0 me-3" onclick="clearSearch()">
+                            <i class="fas fa-times"></i>
+                        </button>
                         {% endif %}
-                        <button
-                            type="submit"
-                            class="btn btn-primary rounded-pill px-3 py-1"
-                            title="Search"
-                        >
+                        <button class="btn btn-primary rounded-pill px-4" type="submit">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
@@ -41,97 +28,113 @@
         </div>
     </div>
 
-    <!-- 👥 Page Title -->
-    <h2 class="text-center mb-4">Students</h2>
+    <!-- Student Cards -->
+    <h3 class="text-center text-dark fw-bold mt-3 mt-md-2">All Students</h3>
+    <hr class="mb-5" style="width: 200px; margin: 0 auto; border-top: 3px solid #007bff;">
 
-    <!-- 📦 Student Grid -->
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="row g-4">
         {% for student in students %}
-        <div class="col d-flex">
-            <div class="card h-100 w-100 border-0 shadow-sm">
-                <div class="card-body text-center">
+        <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden student-card">
+                
+                <!-- Profile Picture -->
+                <div class="position-relative">
+                    <a href="{% url 'student:student_detail' student.id %}">
+                        {% if student.profile_picture %}
+                            <img src="{{ student.profile_picture.url }}" alt="{{ student.name }}"
+                                 class="card-img-top fixed-img" style="height:220px; object-fit:cover;">
+                        {% else %}
+                            <img src="https://via.placeholder.com/400x220?text=No+Image"
+                                 alt="No Image" class="card-img-top fixed-img" style="height:220px; object-fit:cover;">
+                        {% endif %}
 
-                    <!-- 🖼 Profile Picture -->
-                    <a href="{% url 'student:student_detail' pk=student.pk %}">
-                        <img
-                            src="{{ student.profile_picture.url }}"
-                            alt=""
-                            class="rounded-circle border shadow mb-3"
-                            style="width: 70px; height: 70px; object-fit: cover;"
-                        >
+                        <!-- Hover Overlay -->
+                        <div class="overlay d-flex align-items-center justify-content-center">
+                            <span class="btn btn-light btn-sm rounded-pill px-3 shadow-sm">
+                                <i class="bi bi-eye"></i> View Profile
+                            </span>
+                        </div>
                     </a>
+                </div>
 
-                    <!-- 🧑 Name -->
-                    <h5 class="mb-1 text-primary fw-semibold">
-                        <span class="text-dark">
-                        <i class="fas fa-user-graduate"></i>
-                        </span>
-                        <a href="{% url 'student:student_detail' pk=student.pk %}" class="text-decoration-none text-dark">
-                        {{ student.name }}
-                        </a>
-                    </h5>
+                <!-- Student Details -->
+                <div class="card-body text-center d-flex flex-column p-3">
+                    
+                    <!-- Student Name -->
+                    <h5 class="fw-bold my-2 text-dark">{{ student.name|truncatewords:3 }}</h5>
 
-
-                    <!-- 🎓 Class Level -->
-                    <p class="text-secondary small mb-2">
-                        <strong>Class:</strong> {{ student.level }}
+                    <!-- 🎓 Student Level -->
+                    {% if student.level %}
+                    <p class="text-primary small mb-1">
+                        <i class="bi bi-mortarboard me-1"></i> {{ student.level }}
                     </p>
+                    {% endif %}
 
-                    <!-- 📚 Courses -->
-                    <div class="mb-3">
+                     <!-- Enrolled Courses -->
+                    <div class="mb-2">
                         {% if student.enrolled_courses.all %}
                             {% for course in student.enrolled_courses.all %}
-                                <a href="{% url 'courses:course_detail' course.id %}" class="badge bg-light text-dark border small mb-1 text-decoration-none">
-                                <i class="fas fa-book me-1 text-primary"></i> {{ course.title|truncatechars:15 }}
+                                <a href="{% url 'courses:course_detail' course.id %}" 
+                                   class="badge bg-light text-dark border small mb-1 text-decoration-none">
+                                    <i class="fas fa-book me-1 text-primary"></i> {{ course.title|truncatechars:12 }}
                                 </a>
-
-
                             {% endfor %}
                         {% else %}
                             <span class="text-muted small">No enrolled courses</span>
                         {% endif %}
                     </div>
-
-                    <!-- 🔗 View Profile -->
-                    <a
-                        href="{% url 'student:student_detail' pk=student.pk %}"
-                        class="btn btn-outline-primary btn-sm"
-                    >
-                        View Profile
-                    </a>
+                    <!-- Student Info -->
+                    <p class="text-muted small mb-1">
+                        <i class="bi bi-envelope me-1"></i> {{ student.email }}
+                    </p>
+                    
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-geo-alt me-1"></i> {{ student.address|truncatewords:4 }}
+                    </p>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="col">
-            <p class="text-muted text-center">No students found.</p>
+        <div class="col-12 text-center">
+            <p class="text-muted">No students found.</p>
         </div>
         {% endfor %}
     </div>
 
-    <!-- 🔙 Back Button -->
+    <!-- Back Button -->
     <div class="text-center mt-5">
         <a href="javascript:history.back()" class="btn btn-secondary">← Back</a>
     </div>
+</section>
 
-</div>
-
-<!-- 🧼 Clear Search Script -->
-<script>
-    function clearSearch() {
-        const input = document.querySelector('input[name="query"]');
-        input.value = '';
-        input.form.submit();
-    }
-</script>
-{% endblock %}
+<!-- Custom CSS -->
 <style>
-    @media (max-width: 576px) {
-        .input-group > input {
-            font-size: 14px;
-        }
-        .input-group .btn {
-            padding: 0.4rem 0.7rem;
-        }
+    .student-card {
+        transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
     }
-    </style>
+    .student-card:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        transform: translateY(-5px);
+    }
+    .student-card img {
+        transition: transform 0.4s ease;
+    }
+    .student-card:hover img {
+        transform: scale(1.05);
+    }
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.45);
+        opacity: 0;
+        transition: opacity 0.4s ease-in-out;
+    }
+    .student-card:hover .overlay {
+        opacity: 1;
+    }
+</style>
+
+{% endblock %}

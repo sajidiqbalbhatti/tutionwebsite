@@ -1,17 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container my-5 ">
-    <!-- Search Bar at the top -->
-    <div class="row justify-content-center mb-4 mt-3 mt-md-2">
-        <div class="col-md-6">
+<div class="container my-5">
+
+    <!-- 🔍 Search Bar -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-6 col-md-8 col-12">
             <form method="GET" action="{% url 'Tutor:product_search' %}" class="position-relative">
                 <div class="input-group shadow-sm rounded-pill">
-                    <input type="text" name="query" class="form-control rounded-pill ps-4 pe-5"
-                        placeholder="Search for students..." value="{{ query }}">
+                    <input type="text"
+                           name="query"
+                           class="form-control rounded-pill ps-4 pe-5"
+                           placeholder="Search tutors by name, subject or course..."
+                           value="{{ query }}">
                     <div class="position-absolute end-0 d-flex align-items-center">
                         {% if query %}
-                        <button type="button" class="btn btn-link text-danger p-0 me-3" onclick="clearSearch()">
+                        <button type="button"
+                                class="btn btn-link text-danger p-0 me-3"
+                                onclick="clearSearch()"
+                                aria-label="Clear search">
                             <i class="fas fa-times"></i>
                         </button>
                         {% endif %}
@@ -24,125 +31,121 @@
         </div>
     </div>
 
-    <h2 class="text-center mb-4">Meet Our Tutors</h2>
+    <script>
+        function clearSearch() {
+            document.querySelector('[name=query]').value = '';
+        }
+    </script>
 
-    <!-- Tutor Cards -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-      {% for tutor in tutors %}
-        <div class="col">
-          <div class="card h-100 shadow-sm border-0 rounded-4">
-            <div class="card-body d-flex flex-column align-items-center text-center p-4">
+    <!-- Section Heading -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-uppercase text-primary">Tutors</h2>
+        <p class="text-muted small">Smart, skilled & ready to teach</p>
+    </div>
 
-              <!-- Profile Picture -->
-              <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}">
-                <img src="{{ tutor.profile_picture.url }}" alt="Profile Picture"
-                     class="rounded-circle border border-3 border-primary mb-3"
-                     style="width: 100px; height: 100px; object-fit: cover;">
-              </a>
+    {% if tutors %}
+        <!-- Tutors Grid -->
+        <div class="row g-4">
+            {% for tutor in tutors %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card tutor-card border-0 shadow-sm rounded-4 h-100">
 
-              <!-- Name -->
-              <h5 class="fw-bold mb-2">
-                <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}" class="text-decoration-none text-dark">
-                  {{ tutor.name }}
-                </a>
-              </h5>
+                    <!-- Tutor Image -->
+                    <div class="tutor-img-wrapper position-relative">
+                        <img src="{{ tutor.profile_picture.url }}"
+                             alt="{{ tutor.name }}"
+                             class="card-img-top rounded-top-4"
+                             style="height:180px; object-fit:cover;">
 
-              <!-- Tutor Info Section -->
-              <div class="w-100 mt-2">
+                        <div class="tutor-overlay d-flex align-items-center justify-content-center">
+                            <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}"
+                               class="btn btn-sm btn-light rounded-pill px-3 shadow-sm">
+                                <i class="fas fa-user me-1"></i> Profile
+                            </a>
+                        </div>
+                    </div>
 
-                <!-- Education -->
-                <div class="d-flex mb-2 text-muted text-start">
-                  <strong style="width: 100px;">Education:</strong>
-                  <span class="text-truncate">{{ tutor.education|truncatechars:40 }}</span>
+                    <!-- Tutor Info -->
+                    <div class="card-body text-center p-3">
+                        <h6 class="fw-bold mb-1">
+                            <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}"
+                               class="text-decoration-none text-dark hover-primary">
+                               {{ tutor.name }}
+                            </a>
+                        </h6>
+
+                        <p class="text-muted small mb-2">{{ tutor.education|truncatechars:30 }}</p>
+
+                        <!-- Subjects -->
+                        <div class="d-flex justify-content-center flex-wrap gap-1 mb-2">
+                            {% for subject in tutor.subjects.all|slice:":2" %}
+                                <span class="badge bg-light text-primary border px-2 py-1 rounded-pill small">
+                                    {{ subject.name }}
+                                </span>
+                            {% empty %}
+                                <span class="text-muted small">No subjects</span>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Bio -->
+                        <p class="text-muted small mb-0">{{ tutor.bio|truncatewords:10 }}</p>
+                    </div>
                 </div>
-
-                <!-- Subjects -->
-                <div class="d-flex mb-2 text-muted text-start">
-                  <strong style="width: 100px;">Subject:</strong>
-                  <div class="d-flex flex-wrap gap-1">
-                    {% for subject in tutor.subjects.all %}
-                      <span class="badge bg-info text-dark">{{ subject.name }}</span>
-                    {% empty %}
-                      <span class="text-muted">No subjects listed.</span>
-                    {% endfor %}
-                  </div>
-                </div>
-
-                <!-- Bio -->
-                <div class="d-flex mb-2 text-muted text-start">
-                  <strong style="width: 100px;">Bio:</strong>
-                  <span class="text-truncate">{{ tutor.bio|truncatechars:20 }}</span>
-                </div>
-
-                <!-- Courses -->
-                <div class="d-flex mb-2 text-secondary text-start small">
-                  <strong style="width: 100px;">Course:</strong>
-                  <span class="text-truncate">
-                  {% for course in tutor.courses.all %}
-                    <a href="{% url 'courses:course_detail' course.id %}" class="text-decoration-none text-primary">
-                        {{ course.title|truncatechars:20 }}
-                    </a>{% if not forloop.last %}, {% endif %}
-                    {% empty %}
-                      No courses assigned.
-                  {% endfor %}
-                  </span>
-                </div>
-
-              </div>
-
-              <!-- Button -->
-              <a href="{% url 'Tutor:tutor-profile-detail' tutor.pk %}" class="btn btn-outline-primary btn-sm rounded-pill mt-auto px-4">
-                View Profile
-              </a>
             </div>
-          </div>
+            {% endfor %}
         </div>
-      {% endfor %}
-    </div>
 
-    <!-- Pagination -->
-    {% if tutors.has_other_pages %}
-    <nav aria-label="Tutor pagination">
-      <ul class="pagination justify-content-center mt-5">
-        
-        <!-- First + Previous -->
-        {% if tutors.has_previous %}
-          <li class="page-item"><a class="page-link" href="?page=1">« First</a></li>
-          <li class="page-item"><a class="page-link" href="?page={{ tutors.previous_page_number }}">‹ Prev</a></li>
-        {% else %}
-          <li class="page-item disabled"><span class="page-link">« First</span></li>
-          <li class="page-item disabled"><span class="page-link">‹ Prev</span></li>
-        {% endif %}
-
-        <!-- Page Numbers -->
-        {% for num in tutors.paginator.page_range %}
-          {% if num >= tutors.number|add:'-2' and num <= tutors.number|add:'2' %}
-            {% if tutors.number == num %}
-              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-            {% else %}
-              <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Tutor pagination" class="mt-5">
+          <ul class="pagination pagination-sm justify-content-center">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link rounded-pill" href="?query={{ query }}&page={{ page_obj.previous_page_number }}">&laquo;</a>
+              </li>
             {% endif %}
-          {% endif %}
-        {% endfor %}
-
-        <!-- Next + Last -->
-        {% if tutors.has_next %}
-          <li class="page-item"><a class="page-link" href="?page={{ tutors.next_page_number }}">Next ›</a></li>
-          <li class="page-item"><a class="page-link" href="?page={{ tutors.paginator.num_pages }}">Last »</a></li>
-        {% else %}
-          <li class="page-item disabled"><span class="page-link">Next ›</span></li>
-          <li class="page-item disabled"><span class="page-link">Last »</span></li>
+            {% for num in page_obj.paginator.page_range %}
+              {% if num == page_obj.number %}
+                <li class="page-item active"><span class="page-link rounded-pill">{{ num }}</span></li>
+              {% elif num > page_obj.number|add:"-2" and num < page_obj.number|add:"2" %}
+                <li class="page-item"><a class="page-link rounded-pill" href="?query={{ query }}&page={{ num }}">{{ num }}</a></li>
+              {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link rounded-pill" href="?query={{ query }}&page={{ page_obj.next_page_number }}">&raquo;</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
         {% endif %}
 
-      </ul>
-    </nav>
+    {% else %}
+        <p class="text-center text-danger">No tutors found.</p>
     {% endif %}
-
-    <!-- Back Button -->
-    <div class="text-center mt-4">
-        <a href="javascript:history.back()" class="btn btn-secondary rounded-pill px-4 py-2 shadow-sm">
-            <i class="bi bi-arrow-left"></i> Back
-        </a>
-    </div>
 </div>
+
+<!-- Custom Styles -->
+<style>
+/* Tutor Card Hover */
+.tutor-card {
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.tutor-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+}
+
+/* Tutor Overlay */
+.tutor-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.tutor-img-wrapper:hover .tutor-overlay {
+    opacity: 1;
+}
+</style>
 {% endblock %}

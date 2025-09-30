@@ -11,21 +11,34 @@ from django.core.exceptions import PermissionDenied
 from .forms import AssignmentForm, AssignmentSubmissionForm, GradeAssignmentForm
 from .models import Assignment, AssignmentSubmission
 
-# List all assignments
+
+# ================== LIST ASSIGNMENTS ==================
 class AssignmentListView(LoginRequiredMixin, ListView):
     model = Assignment
     template_name = "assignments/assignment_list.html"
     context_object_name = "assignments"
+    paginate_by=6
 
-# Show details of a specific assignment
+    def get_queryset(self):
+        # ✅ Prevent N+1 problem for course & tutor.user
+        return Assignment.objects.select_related("course", "tutor__user")
+
+
+# ================== ASSIGNMENT DETAILS ==================
 class AssignmentDetailView(LoginRequiredMixin, DetailView):
     model = Assignment
     template_name = "assignments/assignment_detail.html"
     context_object_name = "assignment"
 
-# Tutor can create a new assignment
-@method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name="dispatch")
+    def get_queryset(self):
+        # ✅ Optimize related objects
+        return Assignment.objects.select_related("course", "tutor__user").prefetch_related(
+            "submissions__student__user"
+        )
 
+
+# ================== CREATE ASSIGNMENT ==================
+@method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name="dispatch")
 class AssignmentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Assignment
     form_class = AssignmentForm
@@ -45,27 +58,17 @@ class AssignmentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return kwargs
 
     def form_valid(self, form):
-        form.instance.tutor = self.request.user.tutorprofile
-        return super().form_valid(form)
-
-    def form_valid(self, form):
-    # Retrieve the course instance
         course = form.instance.course
-    
-        # Ensure the logged-in user is a tutor for this course
+
         if self.request.user.tutorprofile not in course.tutors.all():
             messages.error(self.request, "You can only create assignments for courses you are a tutor of.")
             return redirect("assignments:assignment_list")
-        
 
-    # Proceed with saving the form, assigning the tutor to the assignment
         form.instance.tutor = self.request.user.tutorprofile
-    
         return super().form_valid(form)
 
 
-
-# Tutor can update an assignment
+# ================== UPDATE ASSIGNMENT ==================
 class AssignmentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Assignment
     form_class = AssignmentForm
@@ -84,37 +87,38 @@ class AssignmentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         assignment = self.get_object()
         course = form.cleaned_data['course']
 
-        # Ensure the tutor is updating an assignment for their own course
         if self.request.user.tutorprofile not in course.tutors.all():
             messages.error(self.request, "You can only update assignments for your own courses.")
             return redirect("assignments:assignment_list")
 
-        form.instance.tutor = self.request.user.tutorprofile  # Ensuring the correct tutor is set
+        form.instance.tutor = self.request.user.tutorprofile
         messages.success(self.request, "Assignment updated successfully!")
         return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.error(self.request, "Update failed! Please correct the errors below.")
         return self.render_to_response(self.get_context_data(form=form))
-    
-    
+
+
+# ================== SEARCH ASSIGNMENT ==================
 def assignment_tutor(request):
-    """Handles course search functionality."""
-    query = request.GET.get('query', '').strip()  # Get the search query, remove extra spaces
-    assignments = Assignment.objects.none()  # Default to an empty queryset
+    query = request.GET.get('query', '').strip()
+    assignments = Assignment.objects.none()
 
     if query and len(query) >= 3:
         assignments = Assignment.objects.filter(
             Q(title__icontains=query) |
-            Q(tutor__name__icontains=query)|
+            Q(tutor__name__icontains=query) |
             Q(course__title__icontains=query)
-            
-           
-        ).distinct()
+        ).select_related("course", "tutor__user").distinct()
 
-    return render(request, 'assignments/search_assignments.html', {'assignments': assignments, 'query': query})
+    return render(request, 'assignments/search_assignments.html', {
+        'assignments': assignments,
+        'query': query
+    })
 
-# Students can submit assignments
+
+# ================== SUBMIT ASSIGNMENT ==================
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name="dispatch")
 class AssignmentSubmissionCreateView(LoginRequiredMixin, CreateView):
     model = AssignmentSubmission
@@ -126,7 +130,7 @@ class AssignmentSubmissionCreateView(LoginRequiredMixin, CreateView):
             messages.warning(request, "Please log in before submitting an assignment.")
             return redirect("users:login")
 
-        assignment = get_object_or_404(Assignment, id=self.kwargs["assignment_id"])
+        assignment = get_object_or_404(Assignment.objects.select_related("course"), id=self.kwargs["assignment_id"])
         course = assignment.course
         is_enrolled = request.user.student.enrolled_courses.filter(id=course.id).exists()
 
@@ -137,52 +141,58 @@ class AssignmentSubmissionCreateView(LoginRequiredMixin, CreateView):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-       """Prevent duplicate assignment submission by the same student."""
-       student = self.request.user.student
-       assignment_id = self.kwargs["assignment_id"]
+        student = self.request.user.student
+        assignment_id = self.kwargs["assignment_id"]
 
-    # Check if the student has already submitted this assignment
-       if AssignmentSubmission.objects.filter(student=student, assignment_id=assignment_id).exists():
-           messages.error(self.request, "You have already submitted this assignment.")
-           return redirect("assignments:assignment_list")  # Redirect to assignment list
+        if AssignmentSubmission.objects.filter(student=student, assignment_id=assignment_id).exists():
+            messages.error(self.request, "You have already submitted this assignment.")
+            return redirect("assignments:assignment_list")
 
-    # If no previous submission, proceed with saving the form
-       form.instance.student = student
-       form.instance.assignment_id = assignment_id
-       messages.success(self.request, "Assignment successfully submitted!")
-    
-       return super().form_valid(form)
-
-       
+        form.instance.student = student
+        form.instance.assignment_id = assignment_id
+        messages.success(self.request, "Assignment successfully submitted!")
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.error(self.request, "Error submitting assignment. Please try again.")
         return self.render_to_response(self.get_context_data(form=form))
         
-        
-
     def get_success_url(self):
         return reverse_lazy("assignments:tutor_submissions")
 
-# Tutor can delete an assignment
+
+# ================== DELETE ASSIGNMENT ==================
 class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
     model = Assignment
     template_name = "assignments/assignment_delete.html"
     success_url = reverse_lazy("assignments:assignment_list")
 
-# Tutor can view assignment submissions
+
+# ================== TUTOR VIEW SUBMISSIONS ==================
 class TutorAssignmentSubmissionsView(LoginRequiredMixin, ListView):
     model = AssignmentSubmission
     template_name = "submission/tutor_submissions.html"
     context_object_name = "submissions"
 
-# View details of an assignment submission
+    def get_queryset(self):
+        return AssignmentSubmission.objects.select_related(
+            "assignment__course", "assignment__tutor__user", "student__user"
+        )
+
+
+# ================== SUBMISSION DETAILS ==================
 class AssignmentSubmissionDetailView(LoginRequiredMixin, DetailView):
     model = AssignmentSubmission
     template_name = "submission/submission_detail.html"
     context_object_name = "submission"
 
-# Tutor can grade an assignment
+    def get_queryset(self):
+        return AssignmentSubmission.objects.select_related(
+            "assignment__course", "assignment__tutor__user", "student__user"
+        )
+
+
+# ================== GRADE ASSIGNMENT ==================
 class GradeAssignmentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = AssignmentSubmission
     form_class = GradeAssignmentForm
@@ -200,27 +210,26 @@ class GradeAssignmentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return reverse_lazy("assignments:tutor_submissions")
     
     def form_valid(self, form):
-        """If the form is valid, save it and show a success message."""
         response = super().form_valid(form)
         messages.success(self.request, "Assignment graded successfully!")
         return response
 
     def form_invalid(self, form):
-        """If the form is invalid, show an error message and reload the page."""
         messages.error(self.request, "There was an error grading the assignment. Please check the form.")
         return self.render_to_response(self.get_context_data(form=form))
 
+    def get_queryset(self):
+        return AssignmentSubmission.objects.select_related(
+            "assignment__course", "assignment__tutor__user", "student__user"
+        )
 
-    def get_context_data(self, **kwargs):
-        
-        context = super().get_context_data(**kwargs)
-        context["submission"] = self.get_object()
-        return context
 
-# Search for submissions
+# ================== SEARCH SUBMISSIONS ==================
 def submission_list(request):
     search_query = request.GET.get("search", "")
-    submissions = AssignmentSubmission.objects.all()
+    submissions = AssignmentSubmission.objects.all().select_related(
+        "student__user", "assignment__course", "assignment__tutor__user"
+    )
 
     if search_query:
         submissions = submissions.filter(

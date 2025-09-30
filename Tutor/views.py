@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, CreateView, UpdateView, DetailView, ListView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -7,65 +8,79 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.db import IntegrityError
-
+from django.core.paginator import Paginator
 from users.models import User
 from .models import TutorProfile,Subject
 from .forms import TutorProfileForm
 from student.models import Student
+
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_control
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.db.models import Prefetch
 
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name='dispatch')
 class TutorView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'tutor/tutor_dashboard.html'
 
     def get_template_names(self):
-        # Check if we should display the enrolled students view
-        return ['tutor/enrolled_students.html'] if self.request.GET.get('view') == 'enrolled_students' else [self.template_name]
+        # Switch template based on query param
+        if self.request.GET.get('view') == 'enrolled_students':
+            return ['tutor/enrolled_students.html']
+        return [self.template_name]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user  
 
-        # Get the tutor profile for the logged-in user
+        # -----------------------------
+        # Tutor Profile (Admin or Tutor)
+        # -----------------------------
         tutor_profile = None
         if self.request.user.is_superuser:
-            # If admin is accessing, you can pick any tutor profile (or skip this logic)
-           tutor_profile = TutorProfile.objects.first()  # or customize this logic
+            tutor_profile = TutorProfile.objects \
+                .prefetch_related("subjects", "courses") \
+                .first()
         else:
-           tutor_profile = getattr(self.request.user, 'tutorprofile', None)
+            tutor_profile = getattr(self.request.user, 'tutorprofile', None)
 
-           # Use tutor_profile safely now
-
-    
-
+        # -----------------------------
+        # If tutor profile exists
+        # -----------------------------
         if tutor_profile:
-            # Get all courses associated with the tutor
-            tutor_courses = tutor_profile.courses.all()
-            
+            # Reuse querysets instead of calling .all()/.count() separately
+            tutor_subjects_qs = tutor_profile.subjects.all()
+            tutor_courses_qs = tutor_profile.courses.all()
 
-            # Get students enrolled in these courses
-            enrolled_students = Student.objects.filter(enrolled_courses__in=tutor_courses).distinct()
+            # Prefetch enrolled_courses + user to avoid N+1 in template
+            enrolled_students_qs = Student.objects.filter(
+                enrolled_courses__in=tutor_courses_qs
+            ).select_related("user").prefetch_related("enrolled_courses").distinct()
 
             context.update({
-                'tutor_subjects': tutor_profile.subjects.all(),
-                'subjects_count': tutor_profile.subjects.count(),
-                'tutor_courses': tutor_courses.count(),
-                'enrolled_students': enrolled_students,
-                'students_count': enrolled_students.count(),
+                "tutor_subjects": tutor_subjects_qs,
+                "subjects_count": tutor_subjects_qs.count(),
+                "tutor_courses": tutor_courses_qs,
+                "courses_count": tutor_courses_qs.count(),
+                "enrolled_students": enrolled_students_qs,
+                "students_count": enrolled_students_qs.count(),
             })
         else:
             context.update({
-                'tutor_subjects': [],
-                'subjects_count': 0,
-                'tutor_courses': [],
-                'enrolled_students': [],
-                'students_count': 0,
+                "tutor_subjects": [],
+                "subjects_count": 0,
+                "tutor_courses": [],
+                "courses_count": 0,
+                "enrolled_students": [],
+                "students_count": 0,
             })
 
         return context
 
     def test_func(self):
         # Ensure that the logged-in user has a role of 'TUTOR'
-         return self.request.user.role == User.TUTOR or self.request.user.is_superuser
+        return self.request.user.role == User.TUTOR or self.request.user.is_superuser
 
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:
@@ -177,6 +192,21 @@ class TutorProfileListView(ListView):
     model = TutorProfile
     template_name = 'tutor/tutor_profile_list.html'
     context_object_name = 'tutors'
+    paginate_by=2
+    def get_queryset(self):
+        tutors = cache.get("all_tutors")
+        if not tutors:
+           print("🔥 DB se tutors fetch ho rahe hain (cache MISS)")
+           tutors = list(
+              TutorProfile.objects
+              .select_related("user")   # OneToOne / ForeignKey relations
+              .prefetch_related("subjects", "courses")  # ManyToMany relations
+            )
+           cache.set("all_tutors", tutors, 60)
+        else:
+           print("✅ Cache HIT (DB skip)")
+
+        return tutors
 
 @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True), name='dispatch')
 class TutorProfileDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -194,12 +224,31 @@ class TutorProfileDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
         messages.error(self.request, "You don't have permission to access this page.")
         return redirect('users:login' if not self.request.user.is_authenticated else 'home_page')
 
-# Tutor Search View
+
+
 def search_tutors(request):
     query = request.GET.get('query', '').strip()
-    tutors = TutorProfile.objects.filter(
-        Q(user__first_name__icontains=query) | Q(subjects__name__icontains=query)|
-        Q(courses__title__icontains=query)
-    ).distinct() if query and len(query) >= 3 else TutorProfile.objects.none()
-    
-    return render(request, 'tutor/tutor_search_results.html', {'tutors': tutors, 'query': query})
+
+    tutors = TutorProfile.objects.none()
+    if query and len(query) >= 3:
+        tutors = TutorProfile.objects.filter(
+            Q(user__first_name__icontains=query) |
+            Q(user__username__icontains=query) |
+            Q(subjects__name__icontains=query) |
+            Q(courses__title__icontains=query)
+        ).distinct()
+
+    # ✅ pagination
+    paginator = Paginator(tutors, 5)  # 5 tutors per page
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        "tutor/tutor_search_results.html",
+        {
+            "tutors": page_obj,  # loop ke liye
+            "page_obj": page_obj,  # pagination ke liye
+            "query": query,
+        }
+    )
