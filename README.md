@@ -6,7 +6,7 @@ A professional-level **Acadexa Tuition Management System** built with Django. Th
 
 ## 🚀 Live Demo
 
-🌐 [Live on PythonAnywhere](https://sajidiqbal.pythonanywhere.com/)  
+🌐 [Live on PythonAnywhere](https://sajiddev.pythonanywhere.com/)  
 💻 [GitHub Repository](https://github.com/sajidiqbalbhatti/tutionwebsite.git)
 
 ---
